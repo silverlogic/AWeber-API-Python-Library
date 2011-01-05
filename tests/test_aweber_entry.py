@@ -60,4 +60,109 @@ class TestAccountGetWebForms(TestAWeberAccountEntry):
         for entry in self.forms:
             self.assertTrue(re.match(url_regex, entry.url))
 
+class TestSubscriber(TestCase):
 
+    def setUp(self):
+        self.aweber = AWeberAPI('1', '2')
+        self.aweber.adapter = MockAdapter()
+        sub_url = '/accounts/1/lists/303449/subscribers/1'
+        self.subscriber = self.aweber.load_from_url(sub_url)
+
+class TestGetAndSetData(TestSubscriber):
+
+    def test_get_name(self):
+        self.assertEqual(self.subscriber.name, 'Joe Jones')
+
+    def test_set_name(self):
+        self.subscriber.name = 'Randy Rhodes'
+        self.assertEqual(self.subscriber.name, 'Randy Rhodes')
+
+    def test_get_custom_fields(self):
+        fields = self.subscriber.custom_fields
+        self.assertEqual(fields['Make'], 'Honda')
+
+    def test_set_custom_fields(self):
+        self.subscriber.custom_fields['Make'] = 'Jeep'
+        self.assertEqual(self.subscriber._data['custom_fields']['Make'], 'Jeep')
+        fields = self.subscriber.custom_fields
+        self.assertEqual(fields['Make'], 'Jeep')
+
+
+class TestSavingSubscriberData(TestSubscriber):
+
+    def setUp(self):
+        TestSubscriber.setUp(self)
+        self.aweber.adapter.requests = []
+        self.subscriber.name = 'Gary Oldman'
+        self.subscriber.custom_fields['Make'] = 'Jeep'
+        self.resp = self.subscriber.save()
+        self.req = self.aweber.adapter.requests[0]
+
+    def test_returned_true(self):
+        self.assertTrue(self.resp)
+
+    def test_should_make_request(self):
+        self.assertEqual(len(self.aweber.adapter.requests), 1)
+
+    def test_should_have_requested_resource_url(self):
+        self.assertEqual(self.req['url'] , self.subscriber.url)
+
+    def test_should_have_requested_with_patch(self):
+        self.assertEqual(self.req['method'], 'PATCH')
+
+    def test_should_have_supplied_data(self):
+        self.assertEqual(self.req['data']['name'], 'Gary Oldman')
+
+    def test_should_not_include_unchanged_data(self):
+        self.assertFalse('email' in self.req['data'])
+
+    def test_should_given_all_custom_fields(self):
+        # Make changed, Model did not
+        self.assertEqual(self.req['data']['custom_fields']['Make'], 'Jeep')
+        self.assertEqual(self.req['data']['custom_fields']['Model'], 'Civic')
+
+class TestSavingInvalidSubscriberData(TestCase):
+
+    def setUp(self):
+        self.aweber = AWeberAPI('1', '2')
+        self.aweber.adapter = MockAdapter()
+        sub_url = '/accounts/1/lists/303449/subscribers/2'
+        self.subscriber = self.aweber.load_from_url(sub_url)
+        self.subscriber.name = 'Gary Oldman'
+        self.subscriber.custom_fields['New Custom Field'] = 'Cookies'
+        self.resp = self.subscriber.save()
+        self.req = self.aweber.adapter.requests[0]
+
+    def test_save_failed(self):
+        self.assertFalse(self.resp)
+
+class TestDeletingSubscriberData(TestSubscriber):
+
+    def setUp(self):
+        TestSubscriber.setUp(self)
+        self.aweber.adapter.requests = []
+        self.response = self.subscriber.delete()
+        self.req = self.aweber.adapter.requests[0]
+
+    def test_should_be_deleted(self):
+        self.assertTrue(self.response)
+
+    def test_should_have_made_request(self):
+        self.assertEqual(len(self.aweber.adapter.requests), 1)
+
+    def test_should_have_made_delete(self):
+        self.assertEqual(self.req['method'], 'DELETE')
+
+class TestFailedSubscriberDelete(TestCase):
+
+    def setUp(self):
+        self.aweber = AWeberAPI('1', '2')
+        self.aweber.adapter = MockAdapter()
+        sub_url = '/accounts/1/lists/303449/subscribers/2'
+        self.subscriber = self.aweber.load_from_url(sub_url)
+        self.aweber.adapter.requests = []
+        self.response = self.subscriber.delete()
+        self.req = self.aweber.adapter.requests[0]
+
+    def test_should_have_failed(self):
+        self.assertFalse(self.response)

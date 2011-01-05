@@ -19,27 +19,38 @@ class OAuthAdapter(object):
             pass
         return response
 
-    def request(self, method, url, data={}):
-        token = self.user.get_highest_priority_token()
-        if token:
-            token = oauth.Token(token, self.user.token_secret)
-            client = oauth.Client(self.consumer, token=token)
-        else:
-            client = oauth.Client(self.consumer)
-
-        if not url[:4] == 'http':
-            url = '%s%s' % (self.api_base, url)
-
-        if len(data.keys()) == 0:
-            body = None
-        else:
-            body = '&'.join(map(lambda x: "{0}={1}".format(x, data[x]),
-                            data.keys()))
-
+    def request(self, method, url, data={}, response='body'):
+        client = self._get_client()
+        url = self._expand_url(url)
+        body = self._prepare_request(method, url, data)
         try:
             resp, content = client.request(url, method, body=body)
-            if type(content) == str:
+            if response == 'body' and type(content) == str:
                 return self._parse(content)
+            if response == 'status':
+                return 200
         except e:
             pass
         return None
+
+    def _expand_url(self, url):
+        if not url[:4] == 'http':
+            return '%s%s' % (self.api_base, url)
+        return url
+
+    def _get_client(self):
+        token = self.user.get_highest_priority_token()
+        if token:
+            token = oauth.Token(token, self.user.token_secret)
+            return  oauth.Client(self.consumer, token=token)
+        return oauth.Client(self.consumer)
+
+    def _prepare_request_body(self, method, url, data):
+        if len(data.keys()) == 0 or method not in ['GET', 'PATH']:
+            return None
+
+        if method == 'GET':
+            return '&'.join(map(lambda x: "{0}={1}".format(x, data[x]),
+                                data.keys()))
+        if method == 'PATCH':
+            return json.dumps(data)
