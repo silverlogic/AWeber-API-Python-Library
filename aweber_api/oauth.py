@@ -8,6 +8,7 @@ class OAuthAdapter(object):
         self.secret = secret
         self.consumer = oauth.Consumer(key=self.key, secret=self.secret)
         self.api_base = base
+        self.debug = False
 
     def _parse(self, response):
         try:
@@ -22,13 +23,20 @@ class OAuthAdapter(object):
     def request(self, method, url, data={}, response='body'):
         client = self._get_client()
         url = self._expand_url(url)
-        body = self._prepare_request(method, url, data)
+        body = self._prepare_request_body(method, url, data)
+        if self.debug:
+            print " *** {0}: {1} ".format(method, url)
         try:
-            resp, content = client.request(url, method, body=body)
+            headers = {'Content-Type' : 'application/json'}
+            resp, content = client.request(url, method, body=body,
+                                           headers=headers)
+            if self.debug:
+                print resp
+                print content
             if response == 'body' and type(content) == str:
                 return self._parse(content)
             if response == 'status':
-                return 200
+                return resp['status']
         except e:
             pass
         return None
@@ -46,7 +54,7 @@ class OAuthAdapter(object):
         return oauth.Client(self.consumer)
 
     def _prepare_request_body(self, method, url, data):
-        if len(data.keys()) == 0 or method not in ['GET', 'PATH']:
+        if len(data.keys()) == 0 or method not in ['GET', 'PATCH']:
             return None
 
         if method == 'GET':
