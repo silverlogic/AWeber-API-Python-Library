@@ -56,7 +56,7 @@ class AWeberEntry(AWeberResponse):
 
     def __getattr__(self, attr):
         if attr in self._data:
-            if type(self._data[attr]) == dict:
+            if isinstance(self._data[attr], dict):
                 return DataDict(self._data[attr], attr, self)
             return self._data[attr]
         elif attr in self.collections_map[self.type]:

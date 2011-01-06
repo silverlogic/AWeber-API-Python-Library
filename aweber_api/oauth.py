@@ -8,7 +8,6 @@ class OAuthAdapter(object):
         self.secret = secret
         self.consumer = oauth.Consumer(key=self.key, secret=self.secret)
         self.api_base = base
-        self.debug = False
 
     def _parse(self, response):
         try:
@@ -24,16 +23,11 @@ class OAuthAdapter(object):
         client = self._get_client()
         url = self._expand_url(url)
         body = self._prepare_request_body(method, url, data)
-        if self.debug:
-            print " *** {0}: {1} ".format(method, url)
         try:
             headers = {'Content-Type' : 'application/json'}
             resp, content = client.request(url, method, body=body,
                                            headers=headers)
-            if self.debug:
-                print resp
-                print content
-            if response == 'body' and type(content) == str:
+            if response == 'body' and isinstance(content, str):
                 return self._parse(content)
             if response == 'status':
                 return resp['status']
