@@ -25,7 +25,7 @@ To connect the AWeber API Python Libray, you simply include the main class,
 AWeberAPI in your application, then create an instace of it with your 
 application's consumer key and secret::
 
-    from aweber import AWeberAPI
+    from aweber_api import AWeberAPI
     aweber = AWeberAPI(consumer_key, consumer_secret)
     account = aweber.get_account(access_token, token_secret)
 
@@ -38,14 +38,14 @@ Getting request tokens / access tokens
 
 You can also use the AWeberAPI object to handle retrieving request tokens::
 
-    from aweber import AWeberAPI
+    from aweber_api import AWeberAPI
     aweber = AWeberAPI(consumer_key, consumer_secret)
     request_token, request_token_secret = aweber.get_request_token(callback_url)
     print aweber.authorize_url
 
 As well as access tokens::
 
-    from aweber import AWeberAPI
+    from aweber_api import AWeberAPI
     aweber = AWeberAPI(consumer_key, consumer_secret)
     aweber.user.verifier = verifier
     aweber.user.request_token = request_token
