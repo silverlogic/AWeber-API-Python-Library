@@ -1,5 +1,6 @@
 import oauth2 as oauth
 import json
+from urllib import urlencode
 
 class OAuthAdapter(object):
 
@@ -24,7 +25,12 @@ class OAuthAdapter(object):
         url = self._expand_url(url)
         body = self._prepare_request_body(method, url, data)
         try:
-            headers = {'Content-Type' : 'application/json'}
+            # need a test for the next 4 lines below
+            content_type = 'application/json'
+            if method == 'POST':
+                content_type = 'application/x-www-form-urlencoded'
+            headers = {'Content-Type' : content_type}
+
             resp, content = client.request(url, method, body=body,
                                            headers=headers)
             if response == 'body' and isinstance(content, str):
@@ -51,9 +57,11 @@ class OAuthAdapter(object):
         return oauth.Client(self.consumer)
 
     def _prepare_request_body(self, method, url, data):
-        if method not in ['GET', 'PATCH'] or len(data.keys()) == 0:
+        # might need a test for the changes to this method
+        if method not in ['POST', 'GET', 'PATCH'] or len(data.keys()) == 0:
             return None
-
+        if method == 'POST':
+            return urlencode(data)
         if method == 'GET':
             return '&'.join(map(lambda x: "{0}={1}".format(x, data[x]),
                                 data.keys()))

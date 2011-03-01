@@ -1,5 +1,3 @@
-from urllib import urlencode
-
 from aweber_api.response import AWeberResponse
 from aweber_api.data_dict import DataDict
 
@@ -65,8 +63,8 @@ class AWeberEntry(AWeberResponse):
         """
         params = {'ws.op': 'move',
                   'list_link': list_.self_link}
-        response = self.adapter.request('POST', self.url, urlencode(params),
-                                        response='headers')
+        response = self.adapter.request('POST', self.url, params,
+            response='headers')
         if response['status'] != '201':
             return False
 

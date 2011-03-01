@@ -42,7 +42,7 @@ responses = {
     }
 }
 
-def request(self, url, method, body, headers):
+def request(self, url, method, **kwargs):
     """Return a tuple to simulate calling oauth2.Client.request."""
     (headers, file) = responses[method][url]
 

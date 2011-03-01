@@ -118,7 +118,7 @@ class TestMovingSubscribers(TestCase):
 
     def test_should_have_requested_move_with_correct_parameters(self):
         expected_params = {'ws.op': 'move', 'list_link': self.list.self_link}
-        self.assertEqual(self.move_req['data'], urlencode(expected_params))
+        self.assertEqual(self.move_req['data'], expected_params)
 
     def test_should_make_two_requests(self):
         self.assertEqual(len(self.aweber.adapter.requests), 2)
