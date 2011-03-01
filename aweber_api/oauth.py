@@ -31,7 +31,10 @@ class OAuthAdapter(object):
                 return self._parse(content)
             if response == 'status':
                 return resp['status']
-        except e:
+            if response == 'headers':
+                return resp
+        except Exception:
+            # TODO: refactor this for better error handling
             pass
         return None
 
@@ -48,7 +51,7 @@ class OAuthAdapter(object):
         return oauth.Client(self.consumer)
 
     def _prepare_request_body(self, method, url, data):
-        if len(data.keys()) == 0 or method not in ['GET', 'PATCH']:
+        if method not in ['GET', 'PATCH'] or len(data.keys()) == 0:
             return None
 
         if method == 'GET':

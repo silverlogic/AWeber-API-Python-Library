@@ -1,3 +1,5 @@
+from urllib import urlencode
+
 from aweber_api.response import AWeberResponse
 from aweber_api.data_dict import DataDict
 
@@ -29,10 +31,50 @@ class AWeberEntry(AWeberResponse):
         return AWeberResponse.__setattr__(self, key, value)
 
     def delete(self):
+        """Invoke the API method to DELETE* this entry resource.
+
+        * Note: Not all entry resources are eligible to be DELETED, please
+                refer to the AWeber API Reference Documentation at
+                https://labs.aweber.com/docs/reference/1.0 for more
+                details on which entry resources may be deleted.
+        """
         status = self.adapter.request('DELETE', self.url, response='status')
         if str(status)[:2] == '20':
             return True
         return False
+
+    def move(self, list_):
+        """Invoke the API method to MOVE* an entry resource to a
+           different List.
+
+        * Note: Not all entry resources are eligible to be moved, please
+                refer to the AWeber API Reference Documentation at
+                https://labs.aweber.com/docs/reference/1.0 for more
+                details on which entry resources may be moved.
+
+        Usage: Use this method to move a Subscriber to another List in the
+               same Account.  When calling this method, the Subscriber on
+               the original List will be unsubscribed and they will appear
+               on the List passed into this method.
+
+        * Certain Subscribers are not eligible to be moved to another List.
+
+        For more details on this operation including restrictions on what
+        Subscribers may be moved, please refer to the API Reference Docs at
+        https://labs.aweber.com/docs/reference/1.0#subscriber
+        """
+        params = {'ws.op': 'move',
+                  'list_link': list_.self_link}
+        response = self.adapter.request('POST', self.url, urlencode(params),
+                                        response='headers')
+        if response['status'] != '201':
+            return False
+
+        # Reload entry resource data
+        new_resource = response['Location']
+        self._diff = {}
+        self._data = self.adapter.request('GET', new_resource)
+        return True
 
     def save(self):
         response = self.adapter.request('PATCH', self.url, self._diff,
@@ -63,5 +105,3 @@ class AWeberEntry(AWeberResponse):
             return self._child_collection(attr)
         else:
             raise AttributeError(attr)
-
-
