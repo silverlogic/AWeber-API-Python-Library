@@ -30,7 +30,6 @@ class OAuthAdapter(object):
             if method == 'POST':
                 content_type = 'application/x-www-form-urlencoded'
             headers = {'Content-Type' : content_type}
-
             resp, content = client.request(url, method, body=body,
                                            headers=headers)
             if response == 'body' and isinstance(content, str):

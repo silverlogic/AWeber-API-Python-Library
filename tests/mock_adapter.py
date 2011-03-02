@@ -30,7 +30,7 @@ responses = {
     },
     'POST' : {
         '/accounts/1/lists/303449/subscribers/1': ({'status': '201',
-            'Location': '/accounts/1/lists/505454/subscribers/3'}, None),
+            'location': '/accounts/1/lists/505454/subscribers/3'}, None),
     },
     'PATCH' : {
         '/accounts/1/lists/303449/subscribers/1': ({}, None),

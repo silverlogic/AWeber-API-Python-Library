@@ -42,24 +42,14 @@ class AWeberEntry(AWeberResponse):
         return False
 
     def move(self, list_):
-        """Invoke the API method to MOVE* an entry resource to a
+        """Invoke the API method to MOVE an entry resource to a
            different List.
 
-        * Note: Not all entry resources are eligible to be moved, please
-                refer to the AWeber API Reference Documentation at
-                https://labs.aweber.com/docs/reference/1.0 for more
-                details on which entry resources may be moved.
-
-        Usage: Use this method to move a Subscriber to another List in the
-               same Account.  When calling this method, the Subscriber on
-               the original List will be unsubscribed and they will appear
-               on the List passed into this method.
-
-        * Certain Subscribers are not eligible to be moved to another List.
-
-        For more details on this operation including restrictions on what
-        Subscribers may be moved, please refer to the API Reference Docs at
-        https://labs.aweber.com/docs/reference/1.0#subscriber
+        Note: Not all entry resources are eligible to be moved, please
+              refer to the AWeber API Reference Documentation at
+              https://labs.aweber.com/docs/reference/1.0 for more
+              details on which entry resources may be moved and if there
+              are any requirements for moving that resource.
         """
         params = {'ws.op': 'move',
                   'list_link': list_.self_link}
@@ -67,9 +57,7 @@ class AWeberEntry(AWeberResponse):
             response='headers')
         if response['status'] != '201':
             return False
-
-        # Reload entry resource data
-        new_resource = response['Location']
+        new_resource = response['location']
         self._diff = {}
         self._data = self.adapter.request('GET', new_resource)
         return True
