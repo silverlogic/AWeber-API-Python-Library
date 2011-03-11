@@ -59,10 +59,7 @@ class OAuthAdapter(object):
         # might need a test for the changes to this method
         if method not in ['POST', 'GET', 'PATCH'] or len(data.keys()) == 0:
             return None
-        if method == 'POST':
+        if method in ['POST', 'GET']:
             return urlencode(data)
-        if method == 'GET':
-            return '&'.join(map(lambda x: "{0}={1}".format(x, data[x]),
-                                data.keys()))
         if method == 'PATCH':
             return json.dumps(data)

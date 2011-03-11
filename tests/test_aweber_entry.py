@@ -50,8 +50,8 @@ class TestAccountGetWebForms(TestAWeberAccountEntry):
     def test_should_be_a_list(self):
         self.assertEqual(type(self.forms), list)
 
-    def test_should_have_23_web_forms(self):
-        self.assertEqual(len(self.forms), 23)
+    def test_should_have_181_web_forms(self):
+        self.assertEqual(len(self.forms), 181)
 
     def test_each_should_be_entry(self):
         for entry in self.forms:
@@ -82,13 +82,13 @@ class TestGetAndSetData(TestSubscriber):
 
     def test_get_custom_fields(self):
         fields = self.subscriber.custom_fields
-        self.assertEqual(fields['Make'], 'Honda')
+        self.assertEqual(fields['Color'], 'blue')
 
     def test_set_custom_fields(self):
-        self.subscriber.custom_fields['Make'] = 'Jeep'
-        self.assertEqual(self.subscriber._data['custom_fields']['Make'], 'Jeep')
+        self.subscriber.custom_fields['Color'] = 'Red'
+        self.assertEqual(self.subscriber._data['custom_fields']['Color'], 'Red')
         fields = self.subscriber.custom_fields
-        self.assertEqual(fields['Make'], 'Jeep')
+        self.assertEqual(fields['Color'], 'Red')
 
 
 class TestMovingSubscribers(TestCase):
@@ -138,7 +138,7 @@ class TestSavingSubscriberData(TestSubscriber):
         TestSubscriber.setUp(self)
         self.aweber.adapter.requests = []
         self.subscriber.name = 'Gary Oldman'
-        self.subscriber.custom_fields['Make'] = 'Jeep'
+        self.subscriber.custom_fields['Color'] = 'Red'
         self.resp = self.subscriber.save()
         self.req = self.aweber.adapter.requests[0]
 
@@ -162,8 +162,8 @@ class TestSavingSubscriberData(TestSubscriber):
 
     def test_should_given_all_custom_fields(self):
         # Make changed, Model did not
-        self.assertEqual(self.req['data']['custom_fields']['Make'], 'Jeep')
-        self.assertEqual(self.req['data']['custom_fields']['Model'], 'Civic')
+        self.assertEqual(self.req['data']['custom_fields']['Color'], 'Red')
+        self.assertEqual(self.req['data']['custom_fields']['Walruses'], '')
 
 class TestSavingInvalidSubscriberData(TestCase):
 

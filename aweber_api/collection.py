@@ -1,5 +1,6 @@
 from math import floor
 from urlparse import parse_qs
+from urllib import urlencode
 from aweber_api.response import AWeberResponse
 
 class AWeberCollection(AWeberResponse):
@@ -48,6 +49,14 @@ class AWeberCollection(AWeberResponse):
         page_number = int(floor(offset / self.page_size))
         start = page_number * self.page_size
         return { 'ws.start' : start, 'ws.size' : self.page_size }
+
+    def find(self, **kwargs):
+        params = {'ws.op': 'find'}
+        params.update(kwargs)
+        query_string = urlencode(params)
+        url = '{0.url}?{1}'.format(self, query_string)
+        print url
+        return self.adapter.request('GET', url, params)
 
     def _create_entry(self, offset):
         from aweber_api.entry import AWeberEntry

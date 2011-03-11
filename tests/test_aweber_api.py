@@ -100,6 +100,6 @@ class WhenGettingAnAccount(TestCase):
     def test_when_getting_an_account(self):
         account = self.aweber.get_account(self.access_token, self.token_secret)
         self.assertEqual(type(account), AWeberEntry)
-        self.assertEqual(account.id, 910)
+        self.assertEqual(account.id, 1)
         self.assertEqual(account.type, 'account')
 

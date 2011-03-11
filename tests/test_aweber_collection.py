@@ -9,6 +9,7 @@ class TestAWeberCollection(TestCase):
         self.aweber = AWeberAPI('1', '2')
         self.aweber.adapter = MockAdapter()
         self.lists = self.aweber.load_from_url('/accounts/1/lists')
+        self.aweber.adapter.requests = []
 
     def test_should_be_a_collection(self):
         self.assertTrue(type(self.lists), AWeberCollection)
@@ -35,3 +36,16 @@ class TestAWeberCollection(TestCase):
         self.assertEqual(type(list), AWeberEntry)
         self.assertEqual(list.type, 'list')
         self.assertEqual(list.id, 303449)
+
+    def test_should_support_find_method(self):
+        base_url = '/accounts/1/lists/303449/subscribers'
+        subscriber_collection = self.aweber.load_from_url(base_url)
+        self.aweber.adapter.requests = []
+        subscribers = subscriber_collection.find(email='joe@example.com')
+        request = self.aweber.adapter.requests[0]
+
+        assert request['url'] == \
+            '{0}?ws.op=find&email=joe%40example.com'.format(base_url)
+        assert 'resource_type_link' in subscribers
+        assert 'entries' in subscribers
+        assert len(subscribers['entries']) == 1
