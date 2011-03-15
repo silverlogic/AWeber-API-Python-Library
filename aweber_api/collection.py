@@ -55,7 +55,7 @@ class AWeberCollection(AWeberResponse):
         params.update(kwargs)
         query_string = urlencode(params)
         url = '{0.url}?{1}'.format(self, query_string)
-        return self.adapter.request('GET', url, params)
+        return self.adapter.request('GET', url)
 
     def _create_entry(self, offset):
         from aweber_api.entry import AWeberEntry
