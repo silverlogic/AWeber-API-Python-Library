@@ -44,8 +44,21 @@ class TestAWeberCollection(TestCase):
         subscribers = subscriber_collection.find(email='joe@example.com')
         request = self.aweber.adapter.requests[0]
 
+        assert subscribers != False
+        assert isinstance(subscribers, AWeberCollection)
+        assert len(subscribers) == 1
+        assert subscribers[0].self_link == \
+                'https://api.aweber.com/1.0/accounts/1/lists/303449/subscribers/50205517'
         assert request['url'] == \
             '{0}?ws.op=find&email=joe%40example.com'.format(base_url)
-        assert 'resource_type_link' in subscribers
-        assert 'entries' in subscribers
-        assert len(subscribers['entries']) == 1
+
+    def test_find_should_handle_errors(self):
+        base_url = '/accounts/1/lists/303449/subscribers'
+        subscriber_collection = self.aweber.load_from_url(base_url)
+        self.aweber.adapter.requests = []
+        subscribers = subscriber_collection.find(name='joe')
+        request = self.aweber.adapter.requests[0]
+
+        assert subscribers == False
+        assert request['url'] == \
+            '{0}?ws.op=find&name=joe'.format(base_url)

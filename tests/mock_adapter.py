@@ -25,6 +25,9 @@ responses = {
         '/accounts/1/lists/505454/subscribers/3':   ({}, 'subscribers/3'),
         '/accounts/1/lists/303449/subscribers?ws.op=find&' \
                          'email=joe%40example.com': ({}, 'subscribers/find'),
+        '/accounts/1/lists/303449/subscribers?ws.op=find&' \
+                         'email=joe%40example.com&' \
+                         'ws.show=total_size': ({}, 'subscribers/find_ts'),
     },
     'POST' : {
         '/accounts/1/lists/303449/subscribers/1': ({

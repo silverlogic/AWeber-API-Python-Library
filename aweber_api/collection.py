@@ -55,12 +55,24 @@ class AWeberCollection(AWeberResponse):
         params.update(kwargs)
         query_string = urlencode(params)
         url = '{0.url}?{1}'.format(self, query_string)
-        return self.adapter.request('GET', url)
+        data = self.adapter.request('GET', url)
+        try:
+            collection = AWeberCollection(url, data, self.adapter)
+        except TypeError:
+            return False
+
+        # collections return total_size_link
+        collection._data['total_size'] = self._get_total_size(url)
+        return collection
+
+    def _get_total_size(self, uri, **kwargs):
+        """Get actual total size number from total_size_link."""
+        total_size_uri = '{0}&ws.show=total_size'.format(uri)
+        return self.adapter.request('GET', total_size_uri)
 
     def _create_entry(self, offset):
         from aweber_api.entry import AWeberEntry
         data = self._entry_data[offset]
-
         url = "{0}/{1}".format(self.url, data['id'])
         self._entries[offset] = AWeberEntry(url, data, self.adapter)
 
