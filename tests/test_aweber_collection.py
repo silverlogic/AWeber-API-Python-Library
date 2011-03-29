@@ -62,3 +62,38 @@ class TestAWeberCollection(TestCase):
         assert subscribers == False
         assert request['url'] == \
             '{0}?ws.op=find&name=joe'.format(base_url)
+
+
+class TestCreatingCustomFields(TestCase):
+
+    def setUp(self):
+        self.aweber = AWeberAPI('1', '2')
+        self.aweber.adapter = MockAdapter()
+        cf_url = '/accounts/1/lists/303449/custom_fields'
+        self.cf = self.aweber.load_from_url(cf_url)
+
+        self.aweber.adapter.requests = []
+        self.resp = self.cf.create(name='Wedding Song')
+        self.create_req = self.aweber.adapter.requests[0]
+        self.get_req = self.aweber.adapter.requests[1]
+
+    def test_returned_true(self):
+        self.assertTrue(self.resp)
+
+    def test_should_have_requested_create_with_post(self):
+        self.assertEqual(self.create_req['method'], 'POST')
+
+    def test_should_have_requested_create_on_cf(self):
+        self.assertEqual(self.create_req['url'] , self.cf.url)
+
+    def test_should_have_requested_move_with_correct_parameters(self):
+        expected_params = {'ws.op': 'create', 'name': 'Wedding Song'}
+        self.assertEqual(self.create_req['data'], expected_params)
+
+    def test_should_make_two_requests(self):
+        self.assertEqual(len(self.aweber.adapter.requests), 2)
+
+    def test_should_refresh_cf_resource(self):
+        self.assertEqual(self.get_req['method'], 'GET')
+        self.assertEqual(self.get_req['url'] ,
+            '/accounts/1/lists/303449/custom_fields/2')
