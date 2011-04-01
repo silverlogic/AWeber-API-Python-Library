@@ -19,6 +19,9 @@ responses = {
         '/accounts/1/lists/303449':                 ({}, 'lists/303449'),
         '/accounts/1/lists/505454':                 ({}, 'lists/505454'),
         '/accounts/1/lists/303449/campaigns':       ({}, 'campaigns/303449'),
+        '/accounts/1/lists/303449/custom_fields':   ({}, 'custom_fields/303449'),
+        '/accounts/1/lists/303449/custom_fields/1': ({}, 'custom_fields/1'),
+        '/accounts/1/lists/303449/custom_fields/2': ({}, 'custom_fields/2'),
         '/accounts/1/lists/303449/subscribers':     ({}, 'subscribers/page1'),
         '/accounts/1/lists/303449/subscribers/1':   ({}, 'subscribers/1'),
         '/accounts/1/lists/303449/subscribers/2':   ({}, 'subscribers/2'),
@@ -30,6 +33,9 @@ responses = {
                          'ws.show=total_size': ({}, 'subscribers/find_ts'),
     },
     'POST' : {
+        '/accounts/1/lists/303449/custom_fields': ({
+            'status': '201',
+            'location': '/accounts/1/lists/303449/custom_fields/2'}, None),
         '/accounts/1/lists/303449/subscribers/1': ({
             'status': '201',
             'location': '/accounts/1/lists/505454/subscribers/3'}, None),

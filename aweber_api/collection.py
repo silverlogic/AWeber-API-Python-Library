@@ -50,6 +50,19 @@ class AWeberCollection(AWeberResponse):
         start = page_number * self.page_size
         return { 'ws.start' : start, 'ws.size' : self.page_size }
 
+    def create(self, **kwargs):
+        params = {'ws.op': 'create'}
+        params.update(kwargs)
+
+        response = self.adapter.request('POST', self.url, params,
+            response='headers')
+        if response['status'] != '201':
+            return False
+        new_resource = response['location']
+        self._diff = {}
+        self._data = self.adapter.request('GET', new_resource)
+        return True
+
     def find(self, **kwargs):
         params = {'ws.op': 'find'}
         params.update(kwargs)
