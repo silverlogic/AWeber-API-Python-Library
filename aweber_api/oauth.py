@@ -27,7 +27,7 @@ class OAuthAdapter(object):
         try:
             # need a test for the next 4 lines below
             content_type = 'application/json'
-            if method == 'GET' and body is not None:
+            if method == 'GET' and body is not None and body is not '':
                 # todo: need a better way to do this!
                 url = '{0}?{1}'.format(url, body)
             if method == 'POST':
@@ -61,7 +61,7 @@ class OAuthAdapter(object):
     def _prepare_request_body(self, method, url, data):
         # might need a test for the changes to this method
         if method not in ['POST', 'GET', 'PATCH'] or len(data.keys()) == 0:
-            return None
+            return ''
         if method in ['POST', 'GET']:
             return urlencode(data)
         if method == 'PATCH':
