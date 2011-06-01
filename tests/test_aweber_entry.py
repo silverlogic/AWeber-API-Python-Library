@@ -27,6 +27,17 @@ class TestAWeberEntry(TestCase):
         campaigns = self.list.campaigns
         self.assertEqual(type(campaigns), AWeberCollection)
 
+    def test_findSubscribers_should_handle_errors(self):
+        base_url = '/accounts/1'
+        account = self.aweber.load_from_url(base_url)
+        self.aweber.adapter.requests = []
+        subscribers = account.findSubscribers(name='bob')
+        request = self.aweber.adapter.requests[0]
+
+        assert subscribers == False
+        assert request['url'] == \
+            '{0}?ws.op=findSubscribers&name=bob'.format(base_url)
+
 class TestAWeberAccountEntry(TestCase):
 
     def setUp(self):
@@ -40,6 +51,9 @@ class TestAWeberAccountEntry(TestCase):
 
     def test_should_be_able_get_web_forms(self):
         forms = self.account.get_web_forms()
+
+    def test_should_be_able_get_web_form_split_tests(self):
+        forms = self.account.get_web_form_split_tests()
 
 class TestAccountGetWebForms(TestAWeberAccountEntry):
 
@@ -62,6 +76,43 @@ class TestAccountGetWebForms(TestAWeberAccountEntry):
         url_regex = '/accounts\/1\/lists\/\d*/web_forms/\d*'
         for entry in self.forms:
             self.assertTrue(re.match(url_regex, entry.url))
+
+class TestAccountGetWebFormSplitTests(TestAWeberAccountEntry):
+
+    def setUp(self):
+        TestAWeberAccountEntry.setUp(self)
+        self.forms = self.account.get_web_form_split_tests()
+
+    def test_should_be_a_list(self):
+        self.assertEqual(type(self.forms), list)
+
+    def test_should_have_10_split_tests(self):
+        self.assertEqual(len(self.forms), 10)
+
+    def test_each_should_be_entry(self):
+        for entry in self.forms:
+            self.assertEqual(type(entry), AWeberEntry)
+            self.assertEqual(entry.type, 'web_form_split_test')
+
+    def test_each_should_have_correct_url(self):
+        url_regex = '/accounts\/1\/lists\/\d*/web_form_split_tests/\d*'
+        for entry in self.forms:
+            self.assertTrue(re.match(url_regex, entry.url))
+
+class TestAccountFindSubscribers(TestAWeberAccountEntry):
+
+    def test_should_support_find_method(self):
+        base_url = '/accounts/1'
+        account = self.aweber.load_from_url(base_url)
+        self.aweber.adapter.requests = []
+        subscribers = account.findSubscribers(email='joe@example.com')
+        request = self.aweber.adapter.requests[0]
+
+        assert subscribers != False
+        assert isinstance(subscribers, AWeberCollection)
+        assert len(subscribers) == 1
+        assert subscribers[0].self_link == \
+                'https://api.aweber.com/1.0/accounts/1/lists/303449/subscribers/1'
 
 class TestSubscriber(TestCase):
 
@@ -210,3 +261,30 @@ class TestFailedSubscriberDelete(TestCase):
 
     def test_should_have_failed(self):
         self.assertFalse(self.response)
+
+class TestGettingParentEntry(TestCase):
+
+    def setUp(self):
+        self.aweber = AWeberAPI('1', '2')
+        self.aweber.adapter = MockAdapter()
+        self.list = self.aweber.load_from_url('/accounts/1/lists/303449')
+        self.account = self.aweber.load_from_url('/accounts/1')
+        self.custom_field = self.aweber.load_from_url('/accounts/1/lists/303449/custom_fields/1')
+
+    def test_should_be_able_get_parent_entry(self):
+        entry = self.list.get_parent_entry()
+
+    def test_list_parent_should_be_account(self):
+        entry = self.list.get_parent_entry()
+        self.assertEqual(type(entry), AWeberEntry)
+        self.assertEqual(entry.type, 'account')
+
+    def test_custom_field_parent_should_be_list(self):
+        entry = self.custom_field.get_parent_entry()
+        self.assertEqual(type(entry), AWeberEntry)
+        self.assertEqual(entry.type, 'list')
+
+    def test_account_parent_should_be_none(self):
+        entry = self.account.get_parent_entry()
+        self.assertEqual(entry, None)
+
