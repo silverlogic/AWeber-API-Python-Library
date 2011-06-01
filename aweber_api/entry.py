@@ -78,9 +78,7 @@ class AWeberEntry(AWeberResponse):
         params.update(kwargs)
         query_string = urlencode(params)
         url = '{0.url}?{1}'.format(self, query_string)
-        print url
         data = self.adapter.request('GET', url)
-        print data
         try:
             collection = AWeberCollection(url, data, self.adapter)
         except TypeError:
