@@ -82,7 +82,6 @@ class AWeberEntry(AWeberResponse):
         try:
             collection = AWeberCollection(url, data, self.adapter)
         except TypeError:
-            print 'meow'
             return False
 
         # collections return total_size_link
