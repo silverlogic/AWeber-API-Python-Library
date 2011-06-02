@@ -1,6 +1,8 @@
 from aweber_api.response import AWeberResponse
 from aweber_api.data_dict import DataDict
+from aweber_api import AWeberCollection
 from urllib import urlencode
+
 
 class AWeberEntry(AWeberResponse):
     """
@@ -72,7 +74,14 @@ class AWeberEntry(AWeberResponse):
         return False
 
     def findSubscribers(self, **kwargs):
-        from aweber_api import AWeberCollection
+        """Invoke the API method to find all subscribers on all Lists
+
+        * Note: This method only works on Account Entry resources and
+                requires access to subscriber information. please
+                refer to the AWeber API Reference Documentation at
+                https://labs.aweber.com/docs/reference/1.0#account
+                for more details on how to call this method.
+        """
         self._method_for('account')
         params = {'ws.op': 'findSubscribers'}
         params.update(kwargs)
@@ -93,19 +102,22 @@ class AWeberEntry(AWeberResponse):
         total_size_uri = '{0}&ws.show=total_size'.format(uri)
         return self.adapter.request('GET', total_size_uri)
 
-    # This method gets an entry's parent entry
-    # Or returns None if no parent entry
     def get_parent_entry(self):
+        """Return the parent entry of this entry or None if no parent exists.
+
+        Example:
+            calling get_parent_entry on a SubscriberEntry will return the List
+            Entry that SubscriberEntry belongs to.  For more information on
+            the AWeber API and how resources are arranged, refer to:
+            https://labs.aweber.com/docs/reference/1.0
+        """
         url_parts = self.url.split('/')
         size = len(url_parts)
-        #Remove entry id and slash from end of url
         url = self.url[:-len(url_parts[size-1])-1]
-        #Remove collection name and slash from end of url
         url = url[:-len(url_parts[size-2])-1]
         data = self.adapter.request('GET', url)
         try:
             entry = AWeberEntry(url, data, self.adapter)
-        #Top of tree
         except TypeError:
             return None
         return entry
