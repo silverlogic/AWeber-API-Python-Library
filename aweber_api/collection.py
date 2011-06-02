@@ -2,6 +2,7 @@ from math import floor
 from urlparse import parse_qs
 from urllib import urlencode
 from aweber_api.response import AWeberResponse
+from aweber_api.base import API_BASE
 
 class AWeberCollection(AWeberResponse):
     """
@@ -42,7 +43,7 @@ class AWeberCollection(AWeberResponse):
         self._key_entries(response)
 
     def _get_page_params(self, offset):
-        next_link = self._data['next_collection_link']
+        next_link = self._data.get('next_collection_link', '')
         url, query = next_link.split('?')
         query_parts = parse_qs(query)
         self.page_size = int(query_parts['ws.size'][0])
@@ -83,10 +84,28 @@ class AWeberCollection(AWeberResponse):
         total_size_uri = '{0}&ws.show=total_size'.format(uri)
         return self.adapter.request('GET', total_size_uri)
 
+    # This method gets a collection's parent entry
+    # Or returns None if no parent entry
+    def get_parent_entry(self):
+        from aweber_api.entry import AWeberEntry
+        url_parts = self.url.split('/')
+        #If top of tree - no parent entry
+        if len(url_parts) <= 3:
+            return None
+        size = len(url_parts)
+        #Remove collection id and slash from end of url
+        url = self.url[:-len(url_parts[size-1])-1]
+        data = self.adapter.request('GET', url)
+        try:
+            entry = AWeberEntry(url, data, self.adapter)
+        except TypeError:
+            return False
+        return entry
+
     def _create_entry(self, offset):
         from aweber_api.entry import AWeberEntry
         data = self._entry_data[offset]
-        url = "{0}/{1}".format(self.url, data['id'])
+        url = data['self_link'].replace(API_BASE, '')
         self._entries[offset] = AWeberEntry(url, data, self.adapter)
 
     def __len__(self):

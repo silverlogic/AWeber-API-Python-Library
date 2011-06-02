@@ -1,5 +1,6 @@
 from unittest import TestCase
 from aweber_api import AWeberAPI, AWeberCollection, AWeberEntry
+from aweber_api.base import API_BASE
 from mock_adapter import MockAdapter
 
 
@@ -63,6 +64,13 @@ class TestAWeberCollection(TestCase):
         assert request['url'] == \
             '{0}?ws.op=find&name=joe'.format(base_url)
 
+    def test_should_create_entries_with_correct_url(self):
+        base_url = '/accounts/1'
+        account = self.aweber.load_from_url(base_url)
+        subscribers = account.findSubscribers(email='joe@example.com')
+        for subscriber in subscribers:
+            assert subscriber.url == subscriber.self_link.replace(API_BASE, '')
+
 
 class TestCreatingCustomFields(TestCase):
 
@@ -97,3 +105,30 @@ class TestCreatingCustomFields(TestCase):
         self.assertEqual(self.get_req['method'], 'GET')
         self.assertEqual(self.get_req['url'] ,
             '/accounts/1/lists/303449/custom_fields/2')
+
+
+class TestGettingParentEntry(TestCase):
+
+    def setUp(self):
+        self.aweber = AWeberAPI('1', '2')
+        self.aweber.adapter = MockAdapter()
+        self.lists = self.aweber.load_from_url('/accounts/1/lists')
+        self.accounts = self.aweber.load_from_url('/accounts')
+        self.custom_fields = self.aweber.load_from_url('/accounts/1/lists/303449/custom_fields')
+
+    def test_should_be_able_get_parent_entry(self):
+        entry = self.lists.get_parent_entry()
+
+    def test_lists_parent_should_be_account(self):
+        entry = self.lists.get_parent_entry()
+        self.assertEqual(type(entry), AWeberEntry)
+        self.assertEqual(entry.type, 'account')
+
+    def test_custom_fields_parent_should_be_list(self):
+        entry = self.custom_fields.get_parent_entry()
+        self.assertEqual(type(entry), AWeberEntry)
+        self.assertEqual(entry.type, 'list')
+
+    def test_accounts_parent_should_be_none(self):
+        entry = self.accounts.get_parent_entry()
+        self.assertEqual(entry, None)

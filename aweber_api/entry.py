@@ -1,5 +1,6 @@
 from aweber_api.response import AWeberResponse
 from aweber_api.data_dict import DataDict
+from urllib import urlencode
 
 class AWeberEntry(AWeberResponse):
     """
@@ -70,10 +71,58 @@ class AWeberEntry(AWeberResponse):
             return True
         return False
 
+    def findSubscribers(self, **kwargs):
+        from aweber_api import AWeberCollection
+        self._method_for('account')
+        params = {'ws.op': 'findSubscribers'}
+        params.update(kwargs)
+        query_string = urlencode(params)
+        url = '{0.url}?{1}'.format(self, query_string)
+        data = self.adapter.request('GET', url)
+        try:
+            collection = AWeberCollection(url, data, self.adapter)
+        except TypeError:
+            print 'meow'
+            return False
+
+        # collections return total_size_link
+        collection._data['total_size'] = self._get_total_size(url)
+        return collection
+
+    def _get_total_size(self, uri, **kwargs):
+        """Get actual total size number from total_size_link."""
+        total_size_uri = '{0}&ws.show=total_size'.format(uri)
+        return self.adapter.request('GET', total_size_uri)
+
+    # This method gets an entry's parent entry
+    # Or returns None if no parent entry
+    def get_parent_entry(self):
+        url_parts = self.url.split('/')
+        size = len(url_parts)
+        #Remove entry id and slash from end of url
+        url = self.url[:-len(url_parts[size-1])-1]
+        #Remove collection name and slash from end of url
+        url = url[:-len(url_parts[size-2])-1]
+        data = self.adapter.request('GET', url)
+        try:
+            entry = AWeberEntry(url, data, self.adapter)
+        #Top of tree
+        except TypeError:
+            return None
+        return entry
+
     def get_web_forms(self):
         self._method_for('account')
         data = self.adapter.request('GET',
                                     "{0}?ws.op=getWebForms".format(self.url))
+        return self._parseNamedOperation(data)
+
+    def get_web_form_split_tests(self):
+        self._method_for('account')
+        data = self.adapter.request(
+            'GET',
+            "{0}?ws.op=getWebFormSplitTests".format(self.url),
+        )
         return self._parseNamedOperation(data)
 
     def _child_collection(self, attr):
