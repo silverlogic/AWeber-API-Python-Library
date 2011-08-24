@@ -38,27 +38,26 @@ class TestAWeberEntry(TestCase):
         assert request['url'] == \
             '{0}?ws.op=findSubscribers&name=bob'.format(base_url)
 
-class TestAWeberAccountEntry(TestCase):
+
+class AccountTestCase(TestCase):
 
     def setUp(self):
         self.aweber = AWeberAPI('1', '2')
         self.aweber.adapter = MockAdapter()
         self.account = self.aweber.load_from_url('/accounts/1')
 
+
+class TestAWeberAccountEntry(AccountTestCase):
+
     def test_should_be_an_entry(self):
         self.assertEqual(type(self.account), AWeberEntry)
         self.assertEqual(self.account.type, 'account')
 
-    def test_should_be_able_get_web_forms(self):
-        forms = self.account.get_web_forms()
 
-    def test_should_be_able_get_web_form_split_tests(self):
-        forms = self.account.get_web_form_split_tests()
-
-class TestAccountGetWebForms(TestAWeberAccountEntry):
+class TestAccountGetWebForms(AccountTestCase):
 
     def setUp(self):
-        TestAWeberAccountEntry.setUp(self)
+        super(TestAccountGetWebForms, self).setUp()
         self.forms = self.account.get_web_forms()
 
     def test_should_be_a_list(self):
@@ -77,10 +76,11 @@ class TestAccountGetWebForms(TestAWeberAccountEntry):
         for entry in self.forms:
             self.assertTrue(re.match(url_regex, entry.url))
 
-class TestAccountGetWebFormSplitTests(TestAWeberAccountEntry):
+
+class TestAccountGetWebFormSplitTests(AccountTestCase):
 
     def setUp(self):
-        TestAWeberAccountEntry.setUp(self)
+        super(TestAccountGetWebFormSplitTests, self).setUp()
         self.forms = self.account.get_web_form_split_tests()
 
     def test_should_be_a_list(self):
@@ -99,7 +99,8 @@ class TestAccountGetWebFormSplitTests(TestAWeberAccountEntry):
         for entry in self.forms:
             self.assertTrue(re.match(url_regex, entry.url))
 
-class TestAccountFindSubscribers(TestAWeberAccountEntry):
+
+class TestAccountFindSubscribers(AccountTestCase):
 
     def test_should_support_find_method(self):
         base_url = '/accounts/1'
@@ -114,7 +115,8 @@ class TestAccountFindSubscribers(TestAWeberAccountEntry):
         assert subscribers[0].self_link == \
                 'https://api.aweber.com/1.0/accounts/1/lists/303449/subscribers/1'
 
-class TestSubscriber(TestCase):
+
+class SubscriberTestCase(TestCase):
 
     def setUp(self):
         self.aweber = AWeberAPI('1', '2')
@@ -122,10 +124,8 @@ class TestSubscriber(TestCase):
         sub_url = '/accounts/1/lists/303449/subscribers/1'
         self.subscriber = self.aweber.load_from_url(sub_url)
 
-    def test_should_be_able_get_activity(self):
-        activity = self.subscriber.get_activity()
 
-class TestGetAndSetData(TestSubscriber):
+class TestGetAndSetData(SubscriberTestCase):
 
     def test_get_name(self):
         self.assertEqual(self.subscriber.name, 'Joe Jones')
@@ -143,6 +143,9 @@ class TestGetAndSetData(TestSubscriber):
         self.assertEqual(self.subscriber._data['custom_fields']['Color'], 'Red')
         fields = self.subscriber.custom_fields
         self.assertEqual(fields['Color'], 'Red')
+
+    def test_should_be_able_get_activity(self):
+        activity = self.subscriber.get_activity()
 
 
 class TestMovingSubscribers(TestCase):
@@ -186,10 +189,10 @@ class TestMovingSubscribers(TestCase):
         self.assertEqual(self.subscriber._diff, {})
 
 
-class TestSavingSubscriberData(TestSubscriber):
+class TestSavingSubscriberData(SubscriberTestCase):
 
     def setUp(self):
-        TestSubscriber.setUp(self)
+        super(TestSavingSubscriberData, self).setUp()
         self.aweber.adapter.requests = []
         self.subscriber.name = 'Gary Oldman'
         self.subscriber.custom_fields['Color'] = 'Red'
@@ -219,6 +222,7 @@ class TestSavingSubscriberData(TestSubscriber):
         self.assertEqual(self.req['data']['custom_fields']['Color'], 'Red')
         self.assertEqual(self.req['data']['custom_fields']['Walruses'], '')
 
+
 class TestSavingInvalidSubscriberData(TestCase):
 
     def setUp(self):
@@ -234,10 +238,11 @@ class TestSavingInvalidSubscriberData(TestCase):
     def test_save_failed(self):
         self.assertFalse(self.resp)
 
-class TestDeletingSubscriberData(TestSubscriber):
+
+class TestDeletingSubscriberData(SubscriberTestCase):
 
     def setUp(self):
-        TestSubscriber.setUp(self)
+        super(TestDeletingSubscriberData, self).setUp()
         self.aweber.adapter.requests = []
         self.response = self.subscriber.delete()
         self.req = self.aweber.adapter.requests[0]
@@ -250,6 +255,7 @@ class TestDeletingSubscriberData(TestSubscriber):
 
     def test_should_have_made_delete(self):
         self.assertEqual(self.req['method'], 'DELETE')
+
 
 class TestFailedSubscriberDelete(TestCase):
 
@@ -264,6 +270,7 @@ class TestFailedSubscriberDelete(TestCase):
 
     def test_should_have_failed(self):
         self.assertFalse(self.response)
+
 
 class TestGettingParentEntry(TestCase):
 
@@ -290,4 +297,3 @@ class TestGettingParentEntry(TestCase):
     def test_account_parent_should_be_none(self):
         entry = self.account.get_parent_entry()
         self.assertEqual(entry, None)
-
