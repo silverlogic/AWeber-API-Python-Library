@@ -29,7 +29,10 @@ class OAuthAdapter(object):
             content_type = 'application/json'
             if method == 'GET' and body is not None and body is not '':
                 # todo: need a better way to do this!
-                url = '{0}?{1}'.format(url, body)
+                if '?' in url:
+                    url = '{0}&{1}'.format(url, body)
+                else:
+                    url = '{0}?{1}'.format(url, body)
             if method == 'POST':
                 content_type = 'application/x-www-form-urlencoded'
             headers = {'Content-Type' : content_type}

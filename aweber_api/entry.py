@@ -73,6 +73,28 @@ class AWeberEntry(AWeberResponse):
             return True
         return False
 
+    def get_activity(self):
+        """Invoke the API method to return all Subscriber activity.
+
+        * Note: This method only works on Subscriber Entry resources.
+                refer to the AWeber API Reference Documentation at
+                https://labs.aweber.com/docs/reference/1.0#subscriber
+                for more details on how to call this method.
+        """
+        self._method_for('subscriber')
+        params = {'ws.op': 'getActivity'}
+        query_string = urlencode(params)
+        url = '{0.url}?{1}'.format(self, query_string)
+        data = self.adapter.request('GET', url)
+        try:
+            collection = AWeberCollection(url, data, self.adapter)
+        except TypeError:
+            return False
+
+        # collections return total_size_link
+        collection._data['total_size'] = self._get_total_size(url)
+        return collection
+
     def findSubscribers(self, **kwargs):
         """Invoke the API method to find all subscribers on all Lists
 

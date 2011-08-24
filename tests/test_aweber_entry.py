@@ -122,6 +122,9 @@ class TestSubscriber(TestCase):
         sub_url = '/accounts/1/lists/303449/subscribers/1'
         self.subscriber = self.aweber.load_from_url(sub_url)
 
+    def test_should_be_able_get_activity(self):
+        activity = self.subscriber.get_activity()
+
 class TestGetAndSetData(TestSubscriber):
 
     def test_get_name(self):
