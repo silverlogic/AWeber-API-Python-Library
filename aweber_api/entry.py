@@ -137,12 +137,12 @@ class AWeberEntry(AWeberResponse):
         size = len(url_parts)
         url = self.url[:-len(url_parts[size-1])-1]
         url = url[:-len(url_parts[size-2])-1]
-        data = self.adapter.request('GET', url)
-        try:
-            entry = AWeberEntry(url, data, self.adapter)
-        except TypeError:
+
+        if url == '':
             return None
-        return entry
+
+        data = self.adapter.request('GET', url)
+        return AWeberEntry(url, data, self.adapter)
 
     def get_web_forms(self):
         self._method_for('account')

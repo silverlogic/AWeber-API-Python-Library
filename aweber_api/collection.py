@@ -3,6 +3,8 @@ from urlparse import parse_qs
 from urllib import urlencode
 from aweber_api.response import AWeberResponse
 from aweber_api.base import API_BASE
+import aweber_api
+
 
 class AWeberCollection(AWeberResponse):
     """
@@ -57,12 +59,10 @@ class AWeberCollection(AWeberResponse):
 
         response = self.adapter.request('POST', self.url, params,
             response='headers')
-        if response['status'] != '201':
-            return False
-        new_resource = response['location']
-        self._diff = {}
-        self._data = self.adapter.request('GET', new_resource)
-        return True
+
+        resource_url = response['location']
+        data = self.adapter.request('GET', resource_url)
+        return aweber_api.entry.AWeberEntry(resource_url, data, self.adapter)
 
     def find(self, **kwargs):
         params = {'ws.op': 'find'}

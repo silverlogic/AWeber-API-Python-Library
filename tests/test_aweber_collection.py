@@ -56,13 +56,7 @@ class TestAWeberCollection(TestCase):
     def test_find_should_handle_errors(self):
         base_url = '/accounts/1/lists/303449/subscribers'
         subscriber_collection = self.aweber.load_from_url(base_url)
-        self.aweber.adapter.requests = []
-        subscribers = subscriber_collection.find(name='joe')
-        request = self.aweber.adapter.requests[0]
-
-        assert subscribers == False
-        assert request['url'] == \
-            '{0}?ws.op=find&name=joe'.format(base_url)
+        self.assertRaises(Exception, subscriber_collection.find, name='joe')
 
     def test_should_create_entries_with_correct_url(self):
         base_url = '/accounts/1'
@@ -70,6 +64,19 @@ class TestAWeberCollection(TestCase):
         subscribers = account.findSubscribers(email='joe@example.com')
         for subscriber in subscribers:
             assert subscriber.url == subscriber.self_link.replace(API_BASE, '')
+
+
+class TestWhenCreatingCustomFieldsFails(TestCase):
+
+    def setUp(self):
+        self.aweber = AWeberAPI('1', '2')
+        self.aweber.adapter = MockAdapter()
+        cf_url = '/accounts/1/lists/505454/custom_fields'
+        self.cf = self.aweber.load_from_url(cf_url)
+        self.aweber.adapter.requests = []
+
+    def test_should_raise_exception(self):
+        self.assertRaises(Exception, self.cf.create, name='Duplicate Name')
 
 
 class TestCreatingCustomFields(TestCase):
@@ -85,8 +92,12 @@ class TestCreatingCustomFields(TestCase):
         self.create_req = self.aweber.adapter.requests[0]
         self.get_req = self.aweber.adapter.requests[1]
 
-    def test_returned_true(self):
-        self.assertTrue(self.resp)
+    def test_should_return_new_resource_entry_object(self):
+        assert isinstance(self.resp, AWeberEntry)
+        assert self.resp.name == u'COLOR'
+        assert self.resp.is_subscriber_updateable == True
+        assert self.resp.id == 2
+        assert self.resp.url == '/accounts/1/lists/303449/custom_fields/2'
 
     def test_should_have_requested_create_with_post(self):
         self.assertEqual(self.create_req['method'], 'POST')

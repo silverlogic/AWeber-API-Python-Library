@@ -28,15 +28,8 @@ class TestAWeberEntry(TestCase):
         self.assertEqual(type(campaigns), AWeberCollection)
 
     def test_findSubscribers_should_handle_errors(self):
-        base_url = '/accounts/1'
-        account = self.aweber.load_from_url(base_url)
-        self.aweber.adapter.requests = []
-        subscribers = account.findSubscribers(name='bob')
-        request = self.aweber.adapter.requests[0]
-
-        assert subscribers == False
-        assert request['url'] == \
-            '{0}?ws.op=findSubscribers&name=bob'.format(base_url)
+        account = self.aweber.load_from_url('/accounts/1')
+        self.assertRaises(Exception, account.findSubscribers, name='bob')
 
 
 class AccountTestCase(TestCase):
@@ -232,11 +225,9 @@ class TestSavingInvalidSubscriberData(TestCase):
         self.subscriber = self.aweber.load_from_url(sub_url)
         self.subscriber.name = 'Gary Oldman'
         self.subscriber.custom_fields['New Custom Field'] = 'Cookies'
-        self.resp = self.subscriber.save()
-        self.req = self.aweber.adapter.requests[0]
 
     def test_save_failed(self):
-        self.assertFalse(self.resp)
+        self.assertRaises(Exception, self.subscriber.save)
 
 
 class TestDeletingSubscriberData(SubscriberTestCase):
@@ -264,12 +255,9 @@ class TestFailedSubscriberDelete(TestCase):
         self.aweber.adapter = MockAdapter()
         sub_url = '/accounts/1/lists/303449/subscribers/2'
         self.subscriber = self.aweber.load_from_url(sub_url)
-        self.aweber.adapter.requests = []
-        self.response = self.subscriber.delete()
-        self.req = self.aweber.adapter.requests[0]
 
-    def test_should_have_failed(self):
-        self.assertFalse(self.response)
+    def test_should_raise_exception_when_failing(self):
+        self.assertRaises(Exception, self.subscriber.delete)
 
 
 class TestGettingParentEntry(TestCase):
@@ -279,6 +267,8 @@ class TestGettingParentEntry(TestCase):
         self.aweber.adapter = MockAdapter()
         self.list = self.aweber.load_from_url('/accounts/1/lists/303449')
         self.account = self.aweber.load_from_url('/accounts/1')
+        #print self.account._data
+        #1/0
         self.custom_field = self.aweber.load_from_url('/accounts/1/lists/303449/custom_fields/1')
 
     def test_should_be_able_get_parent_entry(self):
