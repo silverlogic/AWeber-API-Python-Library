@@ -1,6 +1,6 @@
 from unittest import TestCase
 from aweber_api import AWeberAPI, AWeberCollection, AWeberEntry
-from aweber_api.base import API_BASE
+from aweber_api.base import API_BASE, APIException
 from mock_adapter import MockAdapter
 
 
@@ -56,7 +56,7 @@ class TestAWeberCollection(TestCase):
     def test_find_should_handle_errors(self):
         base_url = '/accounts/1/lists/303449/subscribers'
         subscriber_collection = self.aweber.load_from_url(base_url)
-        self.assertRaises(Exception, subscriber_collection.find, name='joe')
+        self.assertRaises(APIException, subscriber_collection.find, name='joe')
 
     def test_should_create_entries_with_correct_url(self):
         base_url = '/accounts/1'
@@ -76,7 +76,7 @@ class TestWhenCreatingCustomFieldsFails(TestCase):
         self.aweber.adapter.requests = []
 
     def test_should_raise_exception(self):
-        self.assertRaises(Exception, self.cf.create, name='Duplicate Name')
+        self.assertRaises(APIException, self.cf.create, name='Duplicate Name')
 
 
 class TestCreatingCustomFields(TestCase):

@@ -1,5 +1,6 @@
 from aweber_api import AWeberBase
 
+
 class AWeberResponse(AWeberBase):
 
     def __init__(self, url, data, adapter):

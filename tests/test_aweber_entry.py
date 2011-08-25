@@ -3,6 +3,7 @@ from unittest import TestCase
 from urllib import urlencode
 
 from aweber_api import AWeberAPI, AWeberCollection, AWeberEntry
+from aweber_api.base import APIException
 from mock_adapter import MockAdapter
 
 
@@ -29,7 +30,7 @@ class TestAWeberEntry(TestCase):
 
     def test_findSubscribers_should_handle_errors(self):
         account = self.aweber.load_from_url('/accounts/1')
-        self.assertRaises(Exception, account.findSubscribers, name='bob')
+        self.assertRaises(APIException, account.findSubscribers, name='bob')
 
 
 class AccountTestCase(TestCase):
@@ -227,7 +228,7 @@ class TestSavingInvalidSubscriberData(TestCase):
         self.subscriber.custom_fields['New Custom Field'] = 'Cookies'
 
     def test_save_failed(self):
-        self.assertRaises(Exception, self.subscriber.save)
+        self.assertRaises(APIException, self.subscriber.save)
 
 
 class TestDeletingSubscriberData(SubscriberTestCase):
@@ -257,7 +258,7 @@ class TestFailedSubscriberDelete(TestCase):
         self.subscriber = self.aweber.load_from_url(sub_url)
 
     def test_should_raise_exception_when_failing(self):
-        self.assertRaises(Exception, self.subscriber.delete)
+        self.assertRaises(APIException, self.subscriber.delete)
 
 
 class TestGettingParentEntry(TestCase):
@@ -267,8 +268,6 @@ class TestGettingParentEntry(TestCase):
         self.aweber.adapter = MockAdapter()
         self.list = self.aweber.load_from_url('/accounts/1/lists/303449')
         self.account = self.aweber.load_from_url('/accounts/1')
-        #print self.account._data
-        #1/0
         self.custom_field = self.aweber.load_from_url('/accounts/1/lists/303449/custom_fields/1')
 
     def test_should_be_able_get_parent_entry(self):

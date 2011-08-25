@@ -58,7 +58,7 @@ responses = {
             'location': '/accounts/1/lists/505454/subscribers/3'}, None),
     },
     'PATCH' : {
-        '/accounts/1/lists/303449/subscribers/1': ({}, None),
+        '/accounts/1/lists/303449/subscribers/1': ({'status': '209'}, None),
         '/accounts/1/lists/303449/subscribers/2': ({'status': '400'}, 'error'),
     },
     'DELETE' : {

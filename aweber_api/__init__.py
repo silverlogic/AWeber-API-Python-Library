@@ -1,11 +1,12 @@
 from urlparse import parse_qs
 
 from aweber_api.base import (AWeberBase, API_BASE, ACCESS_TOKEN_URL,
-                            REQUEST_TOKEN_URL, AUTHORIZE_URL)
+                            REQUEST_TOKEN_URL, AUTHORIZE_URL, APIException)
 from aweber_api.collection import AWeberCollection
 from aweber_api.entry import AWeberEntry
 from aweber_api.oauth import OAuthAdapter
 from aweber_api.response import AWeberResponse
+
 
 class AWeberAPI(AWeberBase):
     """ Base class for connecting to the AWeberAPI. Created with a consumer key
@@ -83,6 +84,7 @@ class AWeberAPI(AWeberBase):
         accounts = self._read_response(url, response)
         return accounts[0]
 
+
 class AWeberUser(object):
     """
     Simple data storage object representing the user in the OAuth model.  Has
@@ -96,4 +98,3 @@ class AWeberUser(object):
 
     def get_highest_priority_token(self):
         return self.access_token or self.request_token
-

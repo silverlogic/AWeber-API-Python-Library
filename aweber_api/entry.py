@@ -1,6 +1,7 @@
+import aweber_api
 from aweber_api.response import AWeberResponse
 from aweber_api.data_dict import DataDict
-from aweber_api import AWeberCollection
+
 from urllib import urlencode
 
 
@@ -39,10 +40,8 @@ class AWeberEntry(AWeberResponse):
                 https://labs.aweber.com/docs/reference/1.0 for more
                 details on which entry resources may be deleted.
         """
-        status = self.adapter.request('DELETE', self.url, response='status')
-        if str(status)[:2] == '20':
-            return True
-        return False
+        self.adapter.request('DELETE', self.url, response='status')
+        return True
 
     def move(self, list_):
         """Invoke the API method to MOVE an entry resource to a
@@ -58,20 +57,16 @@ class AWeberEntry(AWeberResponse):
                   'list_link': list_.self_link}
         response = self.adapter.request('POST', self.url, params,
             response='headers')
-        if response['status'] != '201':
-            return False
+
         new_resource = response['location']
         self._diff = {}
         self._data = self.adapter.request('GET', new_resource)
         return True
 
     def save(self):
-        response = self.adapter.request('PATCH', self.url, self._diff,
-                                        response='status')
+        self.adapter.request('PATCH', self.url, self._diff, response='status')
         self._diff = {}
-        if str(response)[:2] == '20':
-            return True
-        return False
+        return True
 
     def get_activity(self):
         """Invoke the API method to return all Subscriber activity.
@@ -86,12 +81,8 @@ class AWeberEntry(AWeberResponse):
         query_string = urlencode(params)
         url = '{0.url}?{1}'.format(self, query_string)
         data = self.adapter.request('GET', url)
-        try:
-            collection = AWeberCollection(url, data, self.adapter)
-        except TypeError:
-            return False
 
-        # collections return total_size_link
+        collection = aweber_api.AWeberCollection(url, data, self.adapter)
         collection._data['total_size'] = self._get_total_size(url)
         return collection
 
@@ -109,13 +100,9 @@ class AWeberEntry(AWeberResponse):
         params.update(kwargs)
         query_string = urlencode(params)
         url = '{0.url}?{1}'.format(self, query_string)
-        data = self.adapter.request('GET', url)
-        try:
-            collection = AWeberCollection(url, data, self.adapter)
-        except TypeError:
-            return False
 
-        # collections return total_size_link
+        data = self.adapter.request('GET', url)
+        collection = aweber_api.AWeberCollection(url, data, self.adapter)
         collection._data['total_size'] = self._get_total_size(url)
         return collection
 

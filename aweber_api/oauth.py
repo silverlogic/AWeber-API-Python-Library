@@ -2,6 +2,9 @@ import oauth2 as oauth
 import json
 from urllib import urlencode
 
+import aweber_api
+
+
 class OAuthAdapter(object):
 
     def __init__(self, key, secret, base):
@@ -53,7 +56,8 @@ class OAuthAdapter(object):
             error = content.get('error', {})
             error_type = error.get('type')
             error_msg = error.get('message')
-            raise Exception('{0}: {1}'.format(error_type, error_msg))
+            raise aweber_api.base.APIException(
+                '{0}: {1}'.format(error_type, error_msg))
 
         if response == 'body' and isinstance(content, str):
             return self._parse(content)

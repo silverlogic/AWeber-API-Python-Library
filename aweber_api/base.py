@@ -4,6 +4,11 @@ ACCESS_TOKEN_URL = 'https://auth.aweber.com/1.0/oauth/access_token'
 REQUEST_TOKEN_URL = 'https://auth.aweber.com/1.0/oauth/request_token'
 AUTHORIZE_URL = 'https://auth.aweber.com/1.0/oauth/authorize'
 
+
+class APIException(Exception):
+    """APIExceptions."""
+
+
 class AWeberBase(object):
     """
     Provides functionality shared accross all AWeber objects

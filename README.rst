@@ -16,14 +16,12 @@ Or can be installed using easy_install::
 
     $ easy_install aweber_api
 
-
-
 Usage
 =====
 
 To connect the AWeber API Python Libray, you simply include the main class,
 AWeberAPI in your application, then create an instace of it with your 
-application's consumer key and secret::
+application's consumer key and secret.::
 
     from aweber_api import AWeberAPI
     aweber = AWeberAPI(consumer_key, consumer_secret)
@@ -31,6 +29,38 @@ application's consumer key and secret::
 
     for list in account.lists:
         print list.name
+
+Handling Errors
++++++++++++++++
+
+Sometimes errors happen and your application should handle them appropriately.
+Whenever an API error occurs an AWeberAPIException will be raised with a
+detailed error message and documentation link to explain whats wrong.
+
+You should wrap any calls to the API in a try/except block.
+
+Common Errors:
+ * Resource not found (404 error)
+ * Your application has been rate limited (403 error)
+ * Bad request (400 error)
+ * API Temporarily unavailable (503 error)
+
+Refer to https://labs.aweber.com/docs/troubleshooting for the complete list::
+
+    from aweber_api import AWeberAPI, APIException
+    aweber = AWeberAPI(consumer_key, consumer_secret)
+    account = aweber.get_account(access_token, token_secret)
+
+
+    try:
+        invalid_resource = account.load_from_url('/idontexist')
+    except APIException, exc:
+        print '404! {0}'.format(exc)
+
+    try:
+        print len(account.lists)
+    except APIException, exc:
+        print 'hmm, something unexpected happened!: {0}'.format(exc)
 
 
 Getting request tokens / access tokens
