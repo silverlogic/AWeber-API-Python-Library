@@ -18,21 +18,23 @@ responses = {
         '/accounts/1?ws.op=findSubscribers&' \
                          'email=joe%40example.com&' \
                          'ws.show=total_size': ({}, 'accounts/findSubscribers_ts'),
-        '/accounts/1?ws.op=getWebForms':            ({}, 'accounts/webForms'),
-        '/accounts/1?ws.op=getWebFormSplitTests':   ({}, 'accounts/webFormSplitTests'),
-        '/accounts/1/lists':                        ({}, 'lists/page1'),
-        '/accounts/1/lists?ws.start=20&ws.size=20': ({}, 'lists/page2'),
-        '/accounts/1/lists/303449':                 ({}, 'lists/303449'),
-        '/accounts/1/lists/505454':                 ({}, 'lists/505454'),
-        '/accounts/1/lists/303449/campaigns':       ({}, 'campaigns/303449'),
-        '/accounts/1/lists/303449/custom_fields':   ({}, 'custom_fields/303449'),
-        '/accounts/1/lists/505454/custom_fields':   ({}, 'custom_fields/505454'),
-        '/accounts/1/lists/303449/custom_fields/1': ({}, 'custom_fields/1'),
-        '/accounts/1/lists/303449/custom_fields/2': ({}, 'custom_fields/2'),
-        '/accounts/1/lists/303449/subscribers':     ({}, 'subscribers/page1'),
-        '/accounts/1/lists/303449/subscribers/1':   ({}, 'subscribers/1'),
-        '/accounts/1/lists/303449/subscribers/2':   ({}, 'subscribers/2'),
-        '/accounts/1/lists/505454/subscribers/3':   ({}, 'subscribers/3'),
+        '/accounts/1?ws.op=getWebForms':             ({}, 'accounts/webForms'),
+        '/accounts/1?ws.op=getWebFormSplitTests':    ({}, 'accounts/webFormSplitTests'),
+        '/accounts/1/lists':                         ({}, 'lists/page1'),
+        '/accounts/1/lists?ws.start=20&ws.size=20':  ({}, 'lists/page2'),
+        '/accounts/1/lists/303449':                  ({}, 'lists/303449'),
+        '/accounts/1/lists/505454':                  ({}, 'lists/505454'),
+        '/accounts/1/lists/303449/any_collection':   ({}, 'any_collection/page1'),
+        '/accounts/1/lists/303449/any_collection/1': ({}, 'any_collection/1'),
+        '/accounts/1/lists/303449/campaigns':        ({}, 'campaigns/303449'),
+        '/accounts/1/lists/303449/custom_fields':    ({}, 'custom_fields/303449'),
+        '/accounts/1/lists/505454/custom_fields':    ({}, 'custom_fields/505454'),
+        '/accounts/1/lists/303449/custom_fields/1':  ({}, 'custom_fields/1'),
+        '/accounts/1/lists/303449/custom_fields/2':  ({}, 'custom_fields/2'),
+        '/accounts/1/lists/303449/subscribers':      ({}, 'subscribers/page1'),
+        '/accounts/1/lists/303449/subscribers/1':    ({}, 'subscribers/1'),
+        '/accounts/1/lists/303449/subscribers/2':    ({}, 'subscribers/2'),
+        '/accounts/1/lists/505454/subscribers/3':    ({}, 'subscribers/3'),
         '/accounts/1/lists/303449/subscribers/1?ws.op=getActivity': (
             {}, 'subscribers/get_activity'),
         '/accounts/1/lists/303449/subscribers/1?ws.op=getActivity&ws.show=total_size': (
@@ -48,6 +50,9 @@ responses = {
                          'ws.show=total_size': ({}, 'subscribers/find_ts'),
     },
     'POST' : {
+        '/accounts/1/lists/303449/any_collection':  ({
+            'status': '201',
+            'location': '/accounts/1/lists/303449/any_collection/1'}, None),
         '/accounts/1/lists/303449/custom_fields': ({
             'status': '201',
             'location': '/accounts/1/lists/303449/custom_fields/2'}, None),

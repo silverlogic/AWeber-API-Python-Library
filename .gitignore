@@ -2,3 +2,4 @@
 *.svn
 *.egg-info
 *.swp
+build/
