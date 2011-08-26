@@ -1,4 +1,6 @@
+import json
 from unittest import TestCase
+
 from aweber_api import AWeberAPI, AWeberCollection, AWeberEntry
 from aweber_api.base import API_BASE, APIException
 from mock_adapter import MockAdapter
@@ -99,23 +101,41 @@ class TestCreatingCustomFields(TestCase):
         assert self.resp.id == 2
         assert self.resp.url == '/accounts/1/lists/303449/custom_fields/2'
 
-    def test_should_have_requested_create_with_post(self):
-        self.assertEqual(self.create_req['method'], 'POST')
 
-    def test_should_have_requested_create_on_cf(self):
-        self.assertEqual(self.create_req['url'] , self.cf.url)
+class TestCreateMethod(TestCase):
 
-    def test_should_have_requested_move_with_correct_parameters(self):
-        expected_params = {'ws.op': 'create', 'name': 'Wedding Song'}
+    def setUp(self):
+        self.aweber = AWeberAPI('1', '2')
+        self.aweber.adapter = MockAdapter()
+        url = '/accounts/1/lists/303449/any_collection'
+        self.any_collection = self.aweber.load_from_url(url)
+
+        self.aweber.adapter.requests = []
+        self.resp = self.any_collection.create(
+            a_string='Bob', a_dict={'Color': 'blue'}, a_list=['apple'])
+        self.create_req = self.aweber.adapter.requests[0]
+        self.get_req = self.aweber.adapter.requests[1]
+
+    def test_should_make_request_with_correct_parameters(self):
+        expected_params = {'ws.op': 'create', 'a_string': 'Bob',
+                           'a_dict': json.dumps({'Color': 'blue'}),
+                           'a_list': json.dumps(['apple'])}
+
         self.assertEqual(self.create_req['data'], expected_params)
 
     def test_should_make_two_requests(self):
         self.assertEqual(len(self.aweber.adapter.requests), 2)
 
-    def test_should_refresh_cf_resource(self):
+    def test_should_have_requested_create_on_cf(self):
+        self.assertEqual(self.create_req['url'] , self.any_collection.url)
+
+    def test_should_have_requested_create_with_post(self):
+        self.assertEqual(self.create_req['method'], 'POST')
+
+    def test_should_refresh_created_resource(self):
         self.assertEqual(self.get_req['method'], 'GET')
         self.assertEqual(self.get_req['url'] ,
-            '/accounts/1/lists/303449/custom_fields/2')
+            '/accounts/1/lists/303449/any_collection/1')
 
 
 class TestGettingParentEntry(TestCase):

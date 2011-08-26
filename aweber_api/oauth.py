@@ -84,6 +84,10 @@ class OAuthAdapter(object):
         if method not in ['POST', 'GET', 'PATCH'] or len(data.keys()) == 0:
             return ''
         if method in ['POST', 'GET']:
+            # WARNING: non-primative items in data must be json serialized.
+            for key in data:
+                if type(data[key]) in [dict, list]:
+                    data[key] = json.dumps(data[key])
             return urlencode(data)
         if method == 'PATCH':
             return json.dumps(data)
