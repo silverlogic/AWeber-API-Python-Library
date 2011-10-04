@@ -1,5 +1,7 @@
 Changelog
 ---------
+ 2011-10-04: v1.1.1
+  * Fixed bug where __len__ returns a type error on empty collections returned from custom methods on collections or entries.
 
  2011-08-26: v1.1.0
   * Modified OAuthAdapter to raise an APIException when any API errors occur.

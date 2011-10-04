@@ -109,7 +109,7 @@ class AWeberEntry(AWeberResponse):
     def _get_total_size(self, uri, **kwargs):
         """Get actual total size number from total_size_link."""
         total_size_uri = '{0}&ws.show=total_size'.format(uri)
-        return self.adapter.request('GET', total_size_uri)
+        return int(self.adapter.request('GET', total_size_uri))
 
     def get_parent_entry(self):
         """Return the parent entry of this entry or None if no parent exists.
