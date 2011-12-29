@@ -13,16 +13,20 @@ class AWeberBase(object):
     """
     Provides functionality shared accross all AWeber objects
     """
-
     collections_map = {
         'account' : ['lists', 'integrations'],
         'broadcast_campaign' : ['links', 'messages'],
+        'component': [],
+        'custom_field': [],
         'followup_campaign' :  ['links', 'messages'],
+        'integration': [],
         'link' : ['clicks'],
         'list' : ['campaigns', 'custom_fields', 'subscribers',
                   'web_forms', 'web_form_split_tests'],
         'message' : ['opens', 'tracked_events'],
+        'service-root': 'accounts',
         'subscriber' : [],
+        'tracked_events': [],
         'web_form': [],
         'web_form_split_test' : ['components']
     }
@@ -46,7 +50,7 @@ class AWeberBase(object):
         if 'entries' in response:
             from aweber_api.collection import AWeberCollection
             return AWeberCollection(url, response, self.adapter)
-        if 'id' in response:
+        if 'resource_type_link' in response:
             from aweber_api.entry import AWeberEntry
             return AWeberEntry(url, response, self.adapter)
         raise TypeError('Unknown value returned')
