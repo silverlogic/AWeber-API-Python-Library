@@ -17,6 +17,34 @@ class AWeberAPI(AWeberBase):
         self.adapter = OAuthAdapter(consumer_key, consumer_secret, API_BASE)
         self.adapter.user = AWeberUser()
 
+    @classmethod
+    def parse_authorization_code(cls, authorization_code):
+        """
+        Class method to exchange an authorization code for new api keys.
+        Returns a tuple containing the new consumer key/secret and access
+        token key/secret.
+        """
+        # parse and validate authorization code
+        keys = authorization_code.split('|')
+        if len(keys) < 5:
+            raise APIException('Invalid Authorization Code')
+
+        # create an instance of AWeberAPI for getting the access token
+        consumer_key = keys[0]
+        consumer_secret = keys[1]
+        instance = cls(consumer_key, consumer_secret)
+
+        # set request token and verifier code
+        instance.user.request_token = keys[2]
+        instance.user.token_secret = keys[3]
+        instance.user.verifier = keys[4]
+
+        # exchange request token for an access token
+        access_key, access_secret = instance.get_access_token()
+
+        # return consumer key/secret and access token key/secret
+        return consumer_key, consumer_secret, access_key, access_secret
+
     @property
     def authorize_url(self):
         """
