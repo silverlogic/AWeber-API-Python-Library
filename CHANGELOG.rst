@@ -1,5 +1,8 @@
 Changelog
 ---------
+ 2012-05-30: v1.1.2
+  * Fixed SSL Certificate validation issue with httplib >= 0.7.0
+
  2011-10-04: v1.1.1
   * Fixed bug where __len__ returns a type error on empty collections returned from custom methods on collections or entries.
 

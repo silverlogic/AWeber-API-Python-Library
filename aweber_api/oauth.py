@@ -1,3 +1,4 @@
+import os
 import oauth2 as oauth
 import json
 from urllib import urlencode
@@ -40,6 +41,7 @@ class OAuthAdapter(object):
             content_type = 'application/x-www-form-urlencoded'
         headers = {'Content-Type' : content_type}
 
+
         resp, content = client.request(url, method, body=body,
                                        headers=headers)
         if int(resp['status']) >= 400:
@@ -76,8 +78,11 @@ class OAuthAdapter(object):
         token = self.user.get_highest_priority_token()
         if token:
             token = oauth.Token(token, self.user.token_secret)
-            return  oauth.Client(self.consumer, token=token)
-        return oauth.Client(self.consumer)
+            client = oauth.Client(self.consumer, token=token)
+        else:
+            client = oauth.Client(self.consumer)
+        client.ca_certs = os.path.join(os.path.dirname(__file__), 'cacert.crt')
+        return client
 
     def _prepare_request_body(self, method, url, data):
         # might need a test for the changes to this method
