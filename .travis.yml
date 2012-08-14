@@ -7,3 +7,13 @@ python:
 install: "pip install . --use-mirrors"
 
 script: python setup.py nosetests
+
+notifications:
+  email:
+    recipients:
+      - ethanm@aweber.com
+      - jasons@aweber.com
+      - edl@aweber.com
+      - chrism@aweber.com
+      - amberh@aweber.com
+      - johnb@aweber.com
