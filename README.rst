@@ -1,3 +1,6 @@
+ .. image:: https://secure.travis-ci.org/aweber/AWeber-API-Python-Library.png
+    :target: https://secure.travis-ci.org/aweber/AWeber-API-Python-Library
+
 About 
 -----
 
