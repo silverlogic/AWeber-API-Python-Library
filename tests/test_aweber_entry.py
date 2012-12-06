@@ -152,9 +152,11 @@ class TestMovingSubscribers(TestCase):
         self.subscriber = self.aweber.load_from_url(subscriber_url)
         self.subscriber._diff['name'] = 'Joe Schmoe'
         self.list = self.aweber.load_from_url(new_list_url)
+        self.move_subscriber()
 
+    def move_subscriber(self, **kwargs):
         self.aweber.adapter.requests = []
-        self.resp = self.subscriber.move(self.list)
+        self.resp = self.subscriber.move(self.list, **kwargs)
         self.move_req = self.aweber.adapter.requests[0]
         self.get_req = self.aweber.adapter.requests[1]
 
@@ -182,6 +184,12 @@ class TestMovingSubscribers(TestCase):
     def test_should_reset_diff(self):
         self.assertEqual(self.subscriber._diff, {})
 
+    def test_should_accept_last_followup_message_number_sent(self):
+        self.move_subscriber(last_followup_message_number_sent=999)
+        expected_params = {'ws.op': 'move', 'list_link': self.list.self_link,
+                           'last_followup_message_number_sent': 999}
+
+        self.assertEqual(self.move_req['data'], expected_params)
 
 class TestSavingSubscriberData(SubscriberTestCase):
 

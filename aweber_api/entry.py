@@ -43,7 +43,7 @@ class AWeberEntry(AWeberResponse):
         self.adapter.request('DELETE', self.url, response='status')
         return True
 
-    def move(self, list_):
+    def move(self, list_, **kwargs):
         """Invoke the API method to MOVE an entry resource to a
            different List.
 
@@ -55,8 +55,9 @@ class AWeberEntry(AWeberResponse):
         """
         params = {'ws.op': 'move',
                   'list_link': list_.self_link}
+        params.update(kwargs)
         response = self.adapter.request('POST', self.url, params,
-            response='headers')
+                                        response='headers')
 
         new_resource = response['location']
         self._diff = {}
