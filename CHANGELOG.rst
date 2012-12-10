@@ -1,7 +1,8 @@
 Changelog
 ---------
-2012-12-06: v1.1.3
-  * Modified Move Subscriber method to include optional parameter for last_followup_message_number_sent
+2012-12-10: v1.1.3
+  * Added a parameter to the Move Subscriber method for last followup message number sent.
+    * to support version 1.0.16 of the API.  See https://labs.aweber.com/docs/changelog
 
 2012-05-30: v1.1.2
   * Fixed SSL Certificate validation issue with httplib >= 0.7.0
