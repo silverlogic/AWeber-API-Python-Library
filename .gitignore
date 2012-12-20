@@ -2,4 +2,8 @@
 *.svn
 *.egg-info
 *.swp
+*.egg
+*.coverage
 build/
+coverage/
+nosetests.xml
