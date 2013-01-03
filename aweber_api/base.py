@@ -15,10 +15,10 @@ class AWeberBase(object):
     """
     collections_map = {
         'account' : ['lists', 'integrations'],
-        'broadcast_campaign' : ['links', 'messages'],
+        'broadcast_campaign' : ['links', 'messages', 'stats'],
         'component': [],
         'custom_field': [],
-        'followup_campaign' :  ['links', 'messages'],
+        'followup_campaign' :  ['links', 'messages', 'stats'],
         'integration': [],
         'link' : ['clicks'],
         'list' : ['campaigns', 'custom_fields', 'subscribers',

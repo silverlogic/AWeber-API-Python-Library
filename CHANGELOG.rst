@@ -1,5 +1,10 @@
 Changelog
 ---------
+2013-01-03: v1.1.4
+  * Support version 1.0.17 of the API. (Broadcast Stats)
+  * See https://labs.aweber.com/docs/changelog for details
+  * See https://labs.aweber.com/snippets/campaigns for code snippets and documentation
+
 2012-12-10: v1.1.3
   * Added a parameter to the Move Subscriber method for last followup message number sent.
     * to support version 1.0.16 of the API.  See https://labs.aweber.com/docs/changelog
