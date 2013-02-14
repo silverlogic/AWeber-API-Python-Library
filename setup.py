@@ -15,9 +15,7 @@ setup(
     maintainer_email='api@aweber.com',
     url='https://github.com/aweber/AWeber-API-Python-Library',
     download_url='http://pypi.python.org/pypi/aweber_api',
-    description='The AWeber API Python Library allows you to quickly get up '
-        'and running with integrating access to the AWeber API into your '
-        'Python applications.',
+    description='A python client library for the AWeber API.',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
