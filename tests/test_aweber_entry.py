@@ -66,7 +66,7 @@ class TestAccountGetWebForms(AccountTestCase):
             self.assertEqual(entry.type, 'web_form')
 
     def test_each_should_have_correct_url(self):
-        url_regex = '/accounts\/1\/lists\/\d*/web_forms/\d*'
+        url_regex = '\/accounts\/1\/lists\/\d*/web_forms/\d*'
         for entry in self.forms:
             self.assertTrue(re.match(url_regex, entry.url))
 
@@ -89,7 +89,7 @@ class TestAccountGetWebFormSplitTests(AccountTestCase):
             self.assertEqual(entry.type, 'web_form_split_test')
 
     def test_each_should_have_correct_url(self):
-        url_regex = '/accounts\/1\/lists\/\d*/web_form_split_tests/\d*'
+        url_regex = '\/accounts\/1\/lists\/\d*/web_form_split_tests/\d*'
         for entry in self.forms:
             self.assertTrue(re.match(url_regex, entry.url))
 
