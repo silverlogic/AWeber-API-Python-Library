@@ -18,6 +18,31 @@ Or can be installed using easy_install::
 
     $ easy_install aweber_api
 
+
+Testing
+=======
+
+Place the client library into a virtualenv and execute the test suite by running the following command::
+
+    $ python setup.py nosetests
+
+Also, the project can use tox to run against multiple versions of python.  The tox package is available 
+from pypi here::
+
+    https://pypi.python.org/pypi/tox
+
+Instructions for how to use and configure tox can be found here::
+
+    http://tox.readthedocs.org/en/latest/#
+
+Currently, running tox will require that both python 2.6 and python 2.7 are installed.
+
+Additional interpreters may be installed and the tox.ini file must be modified to include the
+newly added interpreters.  Once the interpreters are installed, the tests can be run via::
+
+    $ tox
+
+
 Usage
 =====
 
