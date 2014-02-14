@@ -18,6 +18,10 @@ Or can be installed using easy_install::
 
     $ easy_install aweber_api
 
+Or pip::
+
+    $ pip install aweber_api
+
 
 Testing
 =======
