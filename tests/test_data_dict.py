@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from dingus import Dingus
+from mock import Mock
 
 from aweber_api.data_dict import DataDict
 
@@ -8,7 +8,7 @@ from aweber_api.data_dict import DataDict
 class TestDataDict(TestCase):
 
     def setUp(self):
-        self.obj = Dingus()
+        self.obj = Mock()
         self.obj.data = {}
         self.data = {
             'favorite food': 'Tacos',
