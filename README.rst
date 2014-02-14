@@ -1,11 +1,19 @@
 AWeber API Python Library
------------------------ 
+------------------------- 
 The AWeber API Python Library allows you to quickly get up and running with
 integrating access to the AWeber API into your Python applications. This
 egg requires the python-oauth2 to handle the authentication. 
 
 .. image:: https://secure.travis-ci.org/aweber/AWeber-API-Python-Library.png?branch=master
     :target: https://secure.travis-ci.org/aweber/AWeber-API-Python-Library
+
+.. image:: https://pypip.in/v/aweber_api/badge.png
+    :target: https://pypi.python.org/pypi/aweber_api/
+    :alt: Latest Version
+
+.. image:: https://pypip.in/license/aweber_api/badge.png
+    :target: https://pypi.python.org/pypi/aweber_api/
+    :alt: License
 
 Installation
 ============
@@ -18,6 +26,16 @@ Or can be installed using easy_install::
 
     $ easy_install aweber_api
 
+Or pip::
+
+    $ pip install aweber_api
+
+Compatibility
+=============
+The client library has been tested as compatible with python versions:
+
+* 2.6
+* 2.7
 
 Testing
 =======
