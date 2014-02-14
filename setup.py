@@ -28,7 +28,7 @@ setup(
     ],
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'httplib2>=0.7.0',
+        'httplib2>=0.7.0,<=0.8.0',
         'oauth2>=1.2',
     ],
     tests_require=[
