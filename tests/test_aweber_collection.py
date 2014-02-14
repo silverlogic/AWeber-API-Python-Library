@@ -1,5 +1,5 @@
-import json
 from unittest import TestCase
+import json
 
 from aweber_api import AWeberAPI, AWeberCollection, AWeberEntry
 from aweber_api.base import API_BASE, APIException
@@ -51,7 +51,8 @@ class TestAWeberCollection(TestCase):
         assert isinstance(subscribers, AWeberCollection)
         assert len(subscribers) == 1
         assert subscribers[0].self_link == \
-                'https://api.aweber.com/1.0/accounts/1/lists/303449/subscribers/50205517'
+            'https://api.aweber.com/1.0/accounts/1/lists/303449/subscribers' \
+            '/50205517'
         assert request['url'] == \
             '{0}?ws.op=find&email=joe%40example.com'.format(base_url)
 
@@ -117,9 +118,12 @@ class TestCreateMethod(TestCase):
         self.get_req = self.aweber.adapter.requests[1]
 
     def test_should_make_request_with_correct_parameters(self):
-        expected_params = {'ws.op': 'create', 'a_string': 'Bob',
-                           'a_dict': json.dumps({'Color': 'blue'}),
-                           'a_list': json.dumps(['apple'])}
+        expected_params = {
+            'ws.op': 'create',
+            'a_string': 'Bob',
+            'a_dict': json.dumps({'Color': 'blue'}),
+            'a_list': json.dumps(['apple']),
+        }
 
         self.assertEqual(self.create_req['data'], expected_params)
 
@@ -127,15 +131,15 @@ class TestCreateMethod(TestCase):
         self.assertEqual(len(self.aweber.adapter.requests), 2)
 
     def test_should_have_requested_create_on_cf(self):
-        self.assertEqual(self.create_req['url'] , self.any_collection.url)
+        self.assertEqual(self.create_req['url'], self.any_collection.url)
 
     def test_should_have_requested_create_with_post(self):
         self.assertEqual(self.create_req['method'], 'POST')
 
     def test_should_refresh_created_resource(self):
         self.assertEqual(self.get_req['method'], 'GET')
-        self.assertEqual(self.get_req['url'] ,
-            '/accounts/1/lists/303449/any_collection/1')
+        self.assertEqual(
+            self.get_req['url'], '/accounts/1/lists/303449/any_collection/1')
 
 
 class TestGettingParentEntry(TestCase):
@@ -145,7 +149,8 @@ class TestGettingParentEntry(TestCase):
         self.aweber.adapter = MockAdapter()
         self.lists = self.aweber.load_from_url('/accounts/1/lists')
         self.accounts = self.aweber.load_from_url('/accounts')
-        self.custom_fields = self.aweber.load_from_url('/accounts/1/lists/303449/custom_fields')
+        self.custom_fields = self.aweber.load_from_url(
+            '/accounts/1/lists/303449/custom_fields')
 
     def test_should_be_able_get_parent_entry(self):
         entry = self.lists.get_parent_entry()

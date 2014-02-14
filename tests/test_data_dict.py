@@ -1,6 +1,9 @@
 from unittest import TestCase
-from aweber_api.data_dict import DataDict
+
 from dingus import Dingus
+
+from aweber_api.data_dict import DataDict
+
 
 class TestDataDict(TestCase):
 
@@ -8,8 +11,8 @@ class TestDataDict(TestCase):
         self.obj = Dingus()
         self.obj.data = {}
         self.data = {
-            'favorite food'  : 'Tacos',
-            'favorite drink' : 'Beer'
+            'favorite food': 'Tacos',
+            'favorite drink': 'Beer'
         }
         self.dict = DataDict(self.data, 'data', self.obj)
 
@@ -22,4 +25,3 @@ class TestDataDict(TestCase):
     def test_set_data(self):
         self.dict['favorite food'] = 'Pizza'
         self.assertEqual(self.obj.data['favorite food'], 'Pizza')
-

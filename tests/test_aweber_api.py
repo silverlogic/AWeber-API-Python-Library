@@ -1,11 +1,21 @@
 from unittest import TestCase
-from mock_adapter import MockAdapter
+
 from dingus import Dingus
-from aweber_api import (AWeberAPI, AWeberUser, ACCESS_TOKEN_URL, AUTHORIZE_URL,
-                        REQUEST_TOKEN_URL, AWeberEntry)
+from mock_adapter import MockAdapter
+
+from aweber_api import (
+    ACCESS_TOKEN_URL,
+    AUTHORIZE_URL,
+    AWeberAPI,
+    AWeberEntry,
+    AWeberUser,
+    REQUEST_TOKEN_URL,
+)
 
 key = 'XXXXX'
 secret = '3434534534534'
+
+
 class AWeberAPITest(TestCase):
 
     def setUp(self):
@@ -13,6 +23,7 @@ class AWeberAPITest(TestCase):
 
     def test_should_exist(self):
         self.assertTrue(self.aweber)
+
 
 class WhenGettingARequestToken(AWeberAPITest):
 
@@ -30,12 +41,14 @@ class WhenGettingARequestToken(AWeberAPITest):
 
     def test_should_pass_args_to_request(self):
         self.called = False
+
         def _request(method, url, params):
             self.assertEqual(url, REQUEST_TOKEN_URL)
             self.assertEqual(method, 'POST')
             self.assertEqual(params['oauth_callback'], 'http://localhost/demo')
             self.called = True
             return self.response
+
         self.aweber.adapter.request = _request
         token, secret = self.aweber.get_request_token('http://localhost/demo')
         self.assertTrue(self.called, 'Called _request')
@@ -48,8 +61,10 @@ class WhenGettingARequestToken(AWeberAPITest):
 
     def test_should_have_authorize_url(self):
         token, secret = self.aweber.get_request_token('http://localhost/demo')
-        self.assertEqual(self.aweber.authorize_url,
-                         "{0}?oauth_token={1}".format(AUTHORIZE_URL, token))
+        self.assertEqual(
+            self.aweber.authorize_url,
+            "{0}?oauth_token={1}".format(AUTHORIZE_URL, token),
+        )
 
 
 class WhenGettingAnAccessToken(AWeberAPITest):
@@ -65,7 +80,6 @@ class WhenGettingAnAccessToken(AWeberAPITest):
         self.aweber.user.token_secret = 'abcd'
         self.aweber.user.verifier = '234a35a1'
 
-
     def test_should_get_access_token(self):
         access_token, token_secret = self.aweber.get_access_token()
         self.assertEqual(access_token, 'cheeseburger')
@@ -73,12 +87,14 @@ class WhenGettingAnAccessToken(AWeberAPITest):
 
     def test_should_pass_args_to_request(self):
         self.called = False
+
         def _request(method, url, params={}):
             self.assertEqual(url, ACCESS_TOKEN_URL)
             self.assertEqual(method, 'POST')
             self.assertEqual(params['oauth_verifier'], '234a35a1')
             self.called = True
             return self.response
+
         self.aweber.adapter.request = _request
         token, secret = self.aweber.get_access_token()
         self.assertTrue(self.called, 'Called _request')
@@ -87,6 +103,7 @@ class WhenGettingAnAccessToken(AWeberAPITest):
         token, secret = self.aweber.get_access_token()
         self.assertEqual(self.aweber.user.access_token, token)
         self.assertEqual(self.aweber.user.token_secret, secret)
+
 
 class WhenGettingAnAccount(TestCase):
 
@@ -102,4 +119,3 @@ class WhenGettingAnAccount(TestCase):
         self.assertEqual(type(account), AWeberEntry)
         self.assertEqual(account.id, 1)
         self.assertEqual(account.type, 'account')
-

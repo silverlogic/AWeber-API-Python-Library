@@ -107,7 +107,7 @@ class TestAccountFindSubscribers(AccountTestCase):
         assert isinstance(subscribers, AWeberCollection)
         assert len(subscribers) == 1
         assert subscribers[0].self_link == \
-                'https://api.aweber.com/1.0/accounts/1/lists/303449/subscribers/1'
+            'https://api.aweber.com/1.0/accounts/1/lists/303449/subscribers/1'
 
 
 class SubscriberTestCase(TestCase):
@@ -134,7 +134,8 @@ class TestGetAndSetData(SubscriberTestCase):
 
     def test_set_custom_fields(self):
         self.subscriber.custom_fields['Color'] = 'Red'
-        self.assertEqual(self.subscriber._data['custom_fields']['Color'], 'Red')
+        self.assertEqual(
+            self.subscriber._data['custom_fields']['Color'], 'Red')
         fields = self.subscriber.custom_fields
         self.assertEqual(fields['Color'], 'Red')
 
@@ -186,10 +187,14 @@ class TestMovingSubscribers(TestCase):
 
     def test_should_accept_last_followup_message_number_sent(self):
         self.move_subscriber(last_followup_message_number_sent=999)
-        expected_params = {'ws.op': 'move', 'list_link': self.list.self_link,
-                           'last_followup_message_number_sent': 999}
+        expected_params = {
+            'ws.op': 'move',
+            'list_link': self.list.self_link,
+            'last_followup_message_number_sent': 999
+        }
 
         self.assertEqual(self.move_req['data'], expected_params)
+
 
 class TestSavingSubscriberData(SubscriberTestCase):
 
@@ -276,7 +281,8 @@ class TestGettingParentEntry(TestCase):
         self.aweber.adapter = MockAdapter()
         self.list = self.aweber.load_from_url('/accounts/1/lists/303449')
         self.account = self.aweber.load_from_url('/accounts/1')
-        self.custom_field = self.aweber.load_from_url('/accounts/1/lists/303449/custom_fields/1')
+        self.custom_field = self.aweber.load_from_url(
+            '/accounts/1/lists/303449/custom_fields/1')
 
     def test_should_be_able_get_parent_entry(self):
         entry = self.list.get_parent_entry()
