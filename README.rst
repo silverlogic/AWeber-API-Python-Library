@@ -22,6 +22,12 @@ Or pip::
 
     $ pip install aweber_api
 
+Compatibility
+=============
+The client library has been tested as compatible with python versions:
+
+* 2.6
+* 2.7
 
 Testing
 =======
