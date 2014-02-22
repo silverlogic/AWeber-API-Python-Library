@@ -1,4 +1,4 @@
-import os
+from os import sep
 
 from mock import patch
 
@@ -60,18 +60,18 @@ responses = {
             'status': '201',
             'location': '/accounts/1/lists/303449/custom_fields/2',
         },
-            None
+            None,
         ),
         '/accounts/1/lists/505454/custom_fields': ({
             'status': '400'
         },
-            'custom_fields/error'
+            'custom_fields/error',
         ),
         '/accounts/1/lists/303449/subscribers/1': ({
             'status': '201',
             'location': '/accounts/1/lists/505454/subscribers/3',
         },
-            None
+            None,
         ),
     },
     'PATCH': {
@@ -93,7 +93,7 @@ def request(self, url, method, **kwargs):
         headers['status'] = '200'
     if file is None:
         return (headers, '')
-    path = os.sep.join(__file__.split(os.sep)[:-1] + ['data', ''])
+    path = sep.join(__file__.split(sep)[:-1] + ['data', ''])
     filename = "{0}{1}.json".format(path, file)
     data = open(filename).read()
     return (headers, data)
