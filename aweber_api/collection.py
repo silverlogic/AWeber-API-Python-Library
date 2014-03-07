@@ -1,7 +1,6 @@
 from math import floor
 from urlparse import parse_qs
 from urllib import urlencode
-import collections
 
 from aweber_api.base import API_BASE
 from aweber_api.entry import AWeberEntry
@@ -100,7 +99,7 @@ class AWeberCollection(AWeberResponse):
         if url_parts is None:
             return None
 
-        url = self._remove_collection_id_from_url(url_parts)
+        url = self._construct_parent_url(url_parts, 1)
 
         data = self.adapter.request('GET', url)
         try:
@@ -110,30 +109,6 @@ class AWeberCollection(AWeberResponse):
             return None
 
         return entry
-
-    def _partition_url(self):
-        try:
-            url_parts = self.url.split('/')
-            #If top of tree - no parent entry
-            if len(url_parts) <= 3:
-                return None
-
-        except Exception:
-            return None
-
-        return url_parts
-
-    def _remove_collection_id_from_url(self, url_parts):
-        """Remove collection id and slash from end of url."""
-        url = ''
-        # construct the url from the url_parts list
-        for i in range(len(url_parts)-1):
-            url = '{0}{1}/'.format(url, url_parts[i])
-
-        # remove the trailing slash
-        url = url[:len(url)-1]
-
-        return url
 
     def _create_entry(self, offset):
         """Add an entry to the collection"""
