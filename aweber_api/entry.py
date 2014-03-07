@@ -142,34 +142,10 @@ class AWeberEntry(AWeberResponse):
         if url_parts is None:
             return None
 
-        url = self._remove_collection_id_from_url(url_parts)
+        url = self._construct_parent_url(url_parts, 2)
 
         data = self.adapter.request('GET', url)
         return AWeberEntry(url, data, self.adapter)
-
-    def _partition_url(self):
-        """Partition the url into segments."""
-        try:
-            url_parts = self.url.split('/')
-            #If top of tree - no parent entry
-            if len(url_parts) <= 3:
-                return None
-
-        except Exception:
-            return None
-
-        return url_parts
-
-    def _remove_collection_id_from_url(self, url_parts):
-        """Remove collection id and slash from end of url."""
-        url = ''
-        # construct the url string from the url_parts list
-        for i in range(len(url_parts) - 2):
-            url = '{0}{1}/'.format(url, url_parts[i])
-        # remove the trailing slash
-        url = url[:len(url) - 1]
-
-        return url
 
     def get_web_forms(self):
         self._method_for('account')
