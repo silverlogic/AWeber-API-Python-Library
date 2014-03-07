@@ -127,7 +127,8 @@ class AWeberAPI(AWeberBase):
 
         data = parse_qs(response)
 
-        if not data.get('oauth_token') or not data.get('oauth_token_secret'):
+        if (data.get('oauth_token') is None) or (
+                data.get('oauth_token_secret') is None):
             raise ValueError('OAuth parameters not returned')
 
         return (data['oauth_token'][0], data['oauth_token_secret'][0])
@@ -162,7 +163,6 @@ class AWeberUser(object):
     verifier.
 
     """
-
     request_token = None
     token_secret = None
     access_token = None

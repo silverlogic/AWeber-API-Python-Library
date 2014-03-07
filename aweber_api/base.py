@@ -69,3 +69,20 @@ class AWeberBase(object):
                 )
             )
         return entries
+
+    def _partition_url(self):
+        try:
+            url_parts = self.url.split('/')
+            #If top of tree - no parent entry
+            if len(url_parts) <= 3:
+                return None
+
+        except AttributeError:
+            return None
+
+        return url_parts
+
+    def _construct_parent_url(self, url_parts, child_position):
+        """Remove collection id and slash from end of url."""
+        url = '/'.join(url_parts[:-child_position])
+        return url
