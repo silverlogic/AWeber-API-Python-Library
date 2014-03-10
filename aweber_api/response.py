@@ -27,4 +27,3 @@ class AWeberResponse(AWeberBase):
             return self._data[attr]
         else:
             raise AttributeError(attr)
-

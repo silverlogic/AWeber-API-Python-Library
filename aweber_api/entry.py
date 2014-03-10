@@ -1,28 +1,35 @@
-import aweber_api
-from aweber_api.response import AWeberResponse
-from aweber_api.data_dict import DataDict
-
 from urllib import urlencode
+
+import aweber_api
+from aweber_api.data_dict import DataDict
+from aweber_api.response import AWeberResponse
 
 
 class AWeberEntry(AWeberResponse):
-    """
-    Represents a single entry in the AWeber API data heirarchy, such as one
-    specific account, list, web form, etc.  Built on data that is returned
-    from an id-ed URI, such as:
-        /accounts/XXXX
-        /accounts/XXXX/lists/XXXX
-    Can also be generated from the data in the entries array of a collection
-    object, which is identical to the data return from the URI for that
-    specific entry.
+    """Represents a single entry in the AWeber API data heirarchy.
 
-    Provides direct access to properties in the response, such as self.id
+    For example, single entries can be a:
+    * specific account
+    * list
+    * web form
+
+    Built on data that is returned from an id-ed URI, such as:
+    * /accounts/XXXX
+    * /accounts/XXXX/lists/XXXX
+
+    Can also be generated from the data in the entries array of a
+    collection object, which is identical to the data return from the
+    URI for that specific entry.
+
+    Provides direct access to properties in the response, such as
+    self.id
+
     """
 
     def __init__(self, url, data, adapter):
         self._data = {}
         self._diff = {}
-        AWeberResponse.__init__(self, url, data, adapter)
+        super(AWeberEntry, self).__init__(url, data, adapter)
         self._child_collections = {}
 
     def __setattr__(self, key, value):
@@ -30,34 +37,37 @@ class AWeberEntry(AWeberResponse):
             self._data[key] = value
             self._diff[key] = value
             return value
-        return AWeberResponse.__setattr__(self, key, value)
+        return super(AWeberEntry, self).__setattr__(key, value)
 
     def delete(self):
         """Invoke the API method to DELETE* this entry resource.
 
-        * Note: Not all entry resources are eligible to be DELETED, please
-                refer to the AWeber API Reference Documentation at
-                https://labs.aweber.com/docs/reference/1.0 for more
-                details on which entry resources may be deleted.
+        * Note:
+            Not all entry resources are eligible to be DELETED, please
+            refer to the AWeber API Reference Documentation at
+            https://labs.aweber.com/docs/reference/1.0 for more
+            details on which entry resources may be deleted.
+
         """
+
         self.adapter.request('DELETE', self.url, response='status')
         return True
 
     def move(self, list_, **kwargs):
-        """Invoke the API method to MOVE an entry resource to a
-           different List.
+        """Invoke the API method to Move an entry resource to a List.
 
-        Note: Not all entry resources are eligible to be moved, please
-              refer to the AWeber API Reference Documentation at
-              https://labs.aweber.com/docs/reference/1.0 for more
-              details on which entry resources may be moved and if there
-              are any requirements for moving that resource.
+        * Note:
+            Not all entry resources are eligible to be moved, please
+            refer to the AWeber API Reference Documentation at
+            https://labs.aweber.com/docs/reference/1.0 for more
+            details on which entry resources may be moved and if there
+            are any requirements for moving that resource.
+
         """
-        params = {'ws.op': 'move',
-                  'list_link': list_.self_link}
+        params = {'ws.op': 'move', 'list_link': list_.self_link}
         params.update(kwargs)
-        response = self.adapter.request('POST', self.url, params,
-                                        response='headers')
+        response = self.adapter.request(
+            'POST', self.url, params, response='headers')
 
         new_resource = response['location']
         self._diff = {}
@@ -72,10 +82,12 @@ class AWeberEntry(AWeberResponse):
     def get_activity(self):
         """Invoke the API method to return all Subscriber activity.
 
-        * Note: This method only works on Subscriber Entry resources.
-                refer to the AWeber API Reference Documentation at
-                https://labs.aweber.com/docs/reference/1.0#subscriber
-                for more details on how to call this method.
+        * Note:
+            This method only works on Subscriber Entry resources.
+            refer to the AWeber API Reference Documentation at
+            https://labs.aweber.com/docs/reference/1.0#subscriber
+            for more details on how to call this method.
+
         """
         self._method_for('subscriber')
         params = {'ws.op': 'getActivity'}
@@ -88,13 +100,15 @@ class AWeberEntry(AWeberResponse):
         return collection
 
     def findSubscribers(self, **kwargs):
-        """Invoke the API method to find all subscribers on all Lists
+        """Invoke the API method to find all subscribers on all Lists.
 
-        * Note: This method only works on Account Entry resources and
-                requires access to subscriber information. please
-                refer to the AWeber API Reference Documentation at
-                https://labs.aweber.com/docs/reference/1.0#account
-                for more details on how to call this method.
+        * Note:
+            This method only works on Account Entry resources and
+            requires access to subscriber information. please
+            refer to the AWeber API Reference Documentation at
+            https://labs.aweber.com/docs/reference/1.0#account
+            for more details on how to call this method.
+
         """
         self._method_for('account')
         params = {'ws.op': 'findSubscribers'}
@@ -113,37 +127,36 @@ class AWeberEntry(AWeberResponse):
         return int(self.adapter.request('GET', total_size_uri))
 
     def get_parent_entry(self):
-        """Return the parent entry of this entry or None if no parent exists.
+        """Return the parent entry of this entry
+
+        returns None if no parent exists.
 
         Example:
-            calling get_parent_entry on a SubscriberEntry will return the List
-            Entry that SubscriberEntry belongs to.  For more information on
-            the AWeber API and how resources are arranged, refer to:
-            https://labs.aweber.com/docs/reference/1.0
-        """
-        url_parts = self.url.split('/')
-        size = len(url_parts)
-        url = self.url[:-len(url_parts[size-1])-1]
-        url = url[:-len(url_parts[size-2])-1]
+            calling get_parent_entry on a SubscriberEntry will return the
+            List Entry that SubscriberEntry belongs to.  For more
+            information on the AWeber API and how resources are arranged,
+            refer to: https://labs.aweber.com/docs/reference/1.0
 
-        if url == '':
+        """
+        url_parts = self._partition_url()
+        if url_parts is None:
             return None
+
+        url = self._construct_parent_url(url_parts, 2)
 
         data = self.adapter.request('GET', url)
         return AWeberEntry(url, data, self.adapter)
 
     def get_web_forms(self):
         self._method_for('account')
-        data = self.adapter.request('GET',
-                                    "{0}?ws.op=getWebForms".format(self.url))
+        data = self.adapter.request(
+            'GET', "{0}?ws.op=getWebForms".format(self.url))
         return self._parseNamedOperation(data)
 
     def get_web_form_split_tests(self):
         self._method_for('account')
         data = self.adapter.request(
-            'GET',
-            "{0}?ws.op=getWebFormSplitTests".format(self.url),
-        )
+            'GET', "{0}?ws.op=getWebFormSplitTests".format(self.url))
         return self._parseNamedOperation(data)
 
     def _child_collection(self, attr):
