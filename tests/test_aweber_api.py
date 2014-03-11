@@ -1,6 +1,6 @@
-from unittest import TestCase
+from unittest2 import TestCase
 
-from mock import Mock
+from mock import Mock, patch, sentinel
 from mock_adapter import MockAdapter
 
 from aweber_api import (
@@ -12,112 +12,212 @@ from aweber_api import (
     REQUEST_TOKEN_URL,
 )
 
-key = 'XXXXX'
-secret = '3434534534534'
+#key = 'XXXXX'
+#secret = '3434534534534'
 
 
-class AWeberAPITest(TestCase):
+class _BaseTest(TestCase):
 
-    def setUp(self):
-        self.aweber = AWeberAPI(key, secret)
+    @classmethod
+    @patch('aweber_api.AWeberAPI.__init__', return_value=None)
+    def setUpClass(cls, api):
+        with patch.object(AWeberAPI, 'user') as cls.user:
+            cls.AWeberAPI = AWeberAPI(
+                sentinel.consumer_key, sentinel.consumer_secret)
+            cls.configure()
+            cls.execute()
 
-    def test_should_exist(self):
-        self.assertTrue(self.aweber)
+    @classmethod
+    def configure(cls):
+        pass
+
+    @classmethod
+    def execute(cls):
+        pass
 
 
-class WhenGettingARequestToken(AWeberAPITest):
+class _RequestTokenBaseTest(_BaseTest):
 
-    def setUp(self):
-        AWeberAPITest.setUp(self)
-        self.response = "oauth_token=1234&oauth_token_secret=abcd"
-        self.aweber.adapter = Mock()
-        self.aweber.adapter.user = AWeberUser()
-        self.aweber.adapter.request = Mock()
-        self.aweber.adapter.request.return_value = self.response
+    @classmethod
+    def execute(cls):
+        cls.token, cls.secret = cls.AWeberAPI.get_request_token(
+            'http://localhost/demo')
 
-    def test_should_get_request_token(self):
-        token, secret = self.aweber.get_request_token('http://localhost/demo')
-        self.assertEqual(token, '1234')
-        self.assertEqual(secret, 'abcd')
 
-    def test_should_pass_args_to_request(self):
-        self.called = False
+class WhenGettingARequestToken(_RequestTokenBaseTest):
 
-        def _request(method, url, params):
-            self.assertEqual(url, REQUEST_TOKEN_URL)
-            self.assertEqual(method, 'POST')
-            self.assertEqual(params['oauth_callback'], 'http://localhost/demo')
-            self.called = True
-            return self.response
+    @classmethod
+    def configure(cls):
+        cls.response = "oauth_token=1234&oauth_token_secret=abcd"
+        cls.AWeberAPI.adapter = Mock()
+        cls.AWeberAPI.adapter.user = AWeberUser()
+        cls.AWeberAPI.adapter.request = Mock()
+        cls.AWeberAPI.adapter.request.return_value = cls.response
 
-        self.aweber.adapter.request = _request
-        token, secret = self.aweber.get_request_token('http://localhost/demo')
-        self.assertTrue(self.called, 'Called _request')
+    def should_get_request_token(self):
+        self.assertEqual(self.token, '1234')
 
-    def test_should_set_up_user(self):
-        token, secret = self.aweber.get_request_token('http://localhost/demo')
+    def should_get_request_token_secret(self):
+        self.assertEqual(self.secret, 'abcd')
 
-        self.assertEqual(self.aweber.user.request_token, token)
-        self.assertEqual(self.aweber.user.token_secret, secret)
+    def should_set_up_user_access_token(self):
+        self.assertEqual(self.user.request_token, self.token)
+
+    def should_set_up_user_token_secret(self):
+        self.assertEqual(self.user.token_secret, self.secret)
+
+
+class WhenGettingARequestTokenGetURL(_RequestTokenBaseTest):
+
+    @classmethod
+    def configure(cls):
+        cls.response = "oauth_token=1234&oauth_token_secret=abcd"
+        cls.AWeberAPI.adapter = Mock()
+        cls.AWeberAPI.adapter.user = AWeberUser()
+        cls.AWeberAPI.adapter.request = Mock()
+        cls.AWeberAPI.adapter.request.return_value = cls.response
 
     def test_should_have_authorize_url(self):
-        token, secret = self.aweber.get_request_token('http://localhost/demo')
+        token, secret = self.AWeberAPI.get_request_token(
+            'http://localhost/demo')
         self.assertEqual(
-            self.aweber.authorize_url,
-            "{0}?oauth_token={1}".format(AUTHORIZE_URL, token),
+            self.AWeberAPI.authorize_url,
+            "{0}?oauth_token={1}".format(AUTHORIZE_URL, self.token),
         )
 
 
-class WhenGettingAnAccessToken(AWeberAPITest):
+class WhanGettingARequestTokenAndPassingArgsToRequest(_RequestTokenBaseTest):
 
-    def setUp(self):
-        AWeberAPITest.setUp(self)
-        self.response = "oauth_token=cheeseburger&oauth_token_secret=hotdog"
-        self.aweber.adapter = Mock()
-        self.aweber.adapter.user = AWeberUser()
-        self.aweber.adapter.request = Mock()
-        self.aweber.adapter.request.return_value = self.response
-
-        self.aweber.user.request_token = '1234'
-        self.aweber.user.token_secret = 'abcd'
-        self.aweber.user.verifier = '234a35a1'
-
-    def test_should_get_access_token(self):
-        access_token, token_secret = self.aweber.get_access_token()
-        self.assertEqual(access_token, 'cheeseburger')
-        self.assertEqual(token_secret, 'hotdog')
-
-    def test_should_pass_args_to_request(self):
-        self.called = False
+    @classmethod
+    def configure(cls):
+        cls.response = "oauth_token=cheeseburger&oauth_token_secret=hotdog"
+        cls.AWeberAPI.adapter = Mock()
+        cls.AWeberAPI.adapter.user = AWeberUser()
+        cls.AWeberAPI.adapter.request = Mock()
+        cls.AWeberAPI.adapter.request.return_value = cls.response
+        cls.called = False
 
         def _request(method, url, params={}):
-            self.assertEqual(url, ACCESS_TOKEN_URL)
-            self.assertEqual(method, 'POST')
-            self.assertEqual(params['oauth_verifier'], '234a35a1')
-            self.called = True
-            return self.response
+            cls._request_method = method
+            cls._request_url = url
+            cls._request_params = params
 
-        self.aweber.adapter.request = _request
-        token, secret = self.aweber.get_access_token()
+            cls.called = True
+            return cls.response
+
+        cls.AWeberAPI.adapter.request = _request
+
+    @classmethod
+    def execute(cls):
+        cls.access_token, cls.token_secret = cls.AWeberAPI.get_request_token(
+            'http://localhost/demo')
+
+    def should_pass_args_to_request(self):
         self.assertTrue(self.called, 'Called _request')
 
-    def test_should_set_up_user(self):
-        token, secret = self.aweber.get_access_token()
-        self.assertEqual(self.aweber.user.access_token, token)
-        self.assertEqual(self.aweber.user.token_secret, secret)
+    def should_pass_method_to_request(self):
+        self.assertEqual(self._request_method, 'POST')
+
+    def should_pass_url_to_request(self):
+        self.assertEqual(self._request_url, REQUEST_TOKEN_URL)
+
+    def should_pass_params_to_request(self):
+        self.assertEqual(
+            self._request_params['oauth_callback'], 'http://localhost/demo')
 
 
-class WhenGettingAnAccount(TestCase):
+class WhenGettingAnAccessToken(_BaseTest):
 
-    def setUp(self):
-        self.aweber = AWeberAPI(key, secret)
-        self.aweber.adapter = MockAdapter()
+    @classmethod
+    def configure(cls):
+        cls.response = "oauth_token=cheeseburger&oauth_token_secret=hotdog"
+        cls.AWeberAPI.adapter = Mock()
+        cls.AWeberAPI.adapter.user = AWeberUser()
+        cls.AWeberAPI.adapter.request = Mock()
+        cls.AWeberAPI.adapter.request.return_value = cls.response
 
-        self.access_token = '1234'
-        self.token_secret = 'abcd'
+        cls.AWeberAPI.user.request_token = '1234'
+        cls.AWeberAPI.user.token_secret = 'abcd'
+        cls.AWeberAPI.user.verifier = '234a35a1'
 
-    def test_when_getting_an_account(self):
-        account = self.aweber.get_account(self.access_token, self.token_secret)
-        self.assertEqual(type(account), AWeberEntry)
-        self.assertEqual(account.id, 1)
-        self.assertEqual(account.type, 'account')
+    @classmethod
+    def execute(cls):
+        cls.access_token, cls.token_secret = cls.AWeberAPI.get_access_token()
+
+    def should_use_correct_access_token(self):
+        self.assertEqual(self.access_token, 'cheeseburger')
+
+    def should_use_correct_token_secret(self):
+        self.assertEqual(self.token_secret, 'hotdog')
+
+    def should_set_up_user_access_token(self):
+        self.assertEqual(self.user.access_token, self.access_token)
+
+    def should_set_up_user_token_secret(self):
+        self.assertEqual(self.user.token_secret, self.token_secret)
+
+
+class WhanGettingAnAccessTokenAndPassingArgsToRequest(_BaseTest):
+
+    @classmethod
+    def configure(cls):
+        cls.response = "oauth_token=cheeseburger&oauth_token_secret=hotdog"
+        cls.AWeberAPI.adapter = Mock()
+        cls.AWeberAPI.adapter.user = AWeberUser()
+        cls.AWeberAPI.adapter.request = Mock()
+        cls.AWeberAPI.adapter.request.return_value = cls.response
+
+        cls.AWeberAPI.user.request_token = '1234'
+        cls.AWeberAPI.user.token_secret = 'abcd'
+        cls.AWeberAPI.user.verifier = '234a35a1'
+        cls.called = False
+
+        def _request(method, url, params={}):
+            cls._request_method = method
+            cls._request_url = url
+            cls._request_params = params
+
+            cls.called = True
+            return cls.response
+
+        cls.AWeberAPI.adapter.request = _request
+
+    @classmethod
+    def execute(cls):
+        cls.access_token, cls.token_secret = cls.AWeberAPI.get_access_token()
+
+    def should_pass_args_to_request(self):
+        self.assertTrue(self.called, 'Called _request')
+
+    def should_pass_method_to_request(self):
+        self.assertEqual(self._request_method, 'POST')
+
+    def should_pass_url_to_request(self):
+        self.assertEqual(self._request_url, ACCESS_TOKEN_URL)
+
+    def should_pass_params_to_request(self):
+        self.assertEqual(
+            self._request_params['oauth_verifier'], self.user.verifier)
+
+
+class WhenGettingAnAccount(_BaseTest):
+
+    @classmethod
+    def configure(cls):
+        cls.AWeberAPI.adapter = MockAdapter()
+        cls.access_token = '1234'
+        cls.token_secret = 'abcd'
+
+    @classmethod
+    def execute(cls):
+        cls.account = cls.AWeberAPI.get_account(
+            sentinel.access_token, sentinel.token_secret)
+
+    def should_return_account_type_as_entry(self):
+        self.assertEqual(type(self.account), AWeberEntry)
+
+    def should_return_correct_account_id(self):
+        self.assertEqual(self.account.id, 1)
+
+    def should_return_an_account_type(self):
+        self.assertEqual(self.account.type, 'account')
