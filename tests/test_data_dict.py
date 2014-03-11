@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest2 import TestCase
 
 from mock import Mock
 
@@ -7,14 +7,23 @@ from aweber_api.data_dict import DataDict
 
 class TestDataDict(TestCase):
 
-    def setUp(self):
-        self.obj = Mock()
-        self.obj.data = {}
-        self.data = {
+    @classmethod
+    def setUpClass(cls):
+        cls.obj = Mock()
+        cls.configure()
+        cls.execute()
+
+    @classmethod
+    def configure(cls):
+        cls.obj.data = {}
+        cls.data = {
             'favorite food': 'Tacos',
             'favorite drink': 'Beer'
         }
-        self.dict = DataDict(self.data, 'data', self.obj)
+
+    @classmethod
+    def execute(cls):
+        cls.dict = DataDict(cls.data, 'data', cls.obj)
 
     def test_exists(self):
         self.assertTrue(self.dict)
