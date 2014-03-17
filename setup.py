@@ -34,6 +34,7 @@ setup(
     tests_require=[
         'mock',
         'coverage',
+        'unittest2'
     ],
     setup_requires=[
         'nose',
