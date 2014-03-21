@@ -100,10 +100,7 @@ class DescribeMethodGetPageParams(_basetest):
 
     @classmethod
     def execute(cls):
-        try:
-            cls.returned = cls.AWeberCollection._get_page_params(cls.offset)
-        except Exception as exception:
-            cls.exception = exception
+        cls.returned = cls.AWeberCollection._get_page_params(cls.offset)
 
     def should_return_correct_page_size(self):
         self.assertEqual(self.returned['ws.size'], 20)
@@ -124,7 +121,7 @@ class WhenGetPageParamsProcessesNextCollectionLinkIsNone(_basetest):
     def execute(cls):
         try:
             cls.returned = cls.AWeberCollection._get_page_params(cls.offset)
-        except Exception as exception:
+        except StopIteration as exception:
             cls.exception = exception
 
     def should_raise_stopiteration_when_next_collection_link_is_none(self):

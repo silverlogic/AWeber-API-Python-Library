@@ -110,20 +110,6 @@ class AWeberCollection(AWeberResponse):
 
         return entry
 
-    def _get_size_from_url(self):
-        """Break up the url into parts and retrieve the size parameter."""
-        url_parts = self.url.split('/')
-        #If top of tree - no parent entry
-        if len(url_parts) <= 3:
-            return None
-        size = len(url_parts)
-        return url_parts, size
-
-    def _get_request_endpoint_from_url(self, url_parts, size):
-        """Remove collection id and slash from end of url."""
-        url = self.url[:-len(url_parts[size - 1]) - 1]
-        return url
-
     def _create_entry(self, offset):
         """Add an entry to the collection"""
         data = self._entry_data[offset]
