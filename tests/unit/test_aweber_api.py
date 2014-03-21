@@ -114,7 +114,7 @@ class DescribePartitionURL(_basetest):
     def configure(cls):
         cls.AWeberAPI = AWeberAPI(
             sentinel.consumer_key, sentinel.consumer_secret)
-        cls.AWeberAPI.url =  '/accounts/1/lists/1'
+        cls.AWeberAPI.url = '/accounts/1/lists/1'
 
     @classmethod
     def execute(cls):
@@ -131,7 +131,7 @@ class WhenPartitionUrlHasError(_basetest):
     def configure(cls):
         cls.AWeberAPI = AWeberAPI(
             sentinel.consumer_key, sentinel.consumer_secret)
-        cls.AWeberAPI.url =  '/accounts/'
+        cls.AWeberAPI.url = '/accounts/'
 
     @classmethod
     def execute(cls):
@@ -155,13 +155,9 @@ class WhenPartitionUrlProcessesNoneForURL(_basetest):
 
     @classmethod
     def execute(cls):
-        try:
-            cls.url_parts = cls.AWeberAPI._partition_url()
+        cls.url_parts = cls.AWeberAPI._partition_url()
 
-        except Exception as exception:
-            cls.exception = exception
-
-    def should_return_none_(self):
+    def should_return_none(self):
         self.assertEqual(self.url_parts, None)
 
 
