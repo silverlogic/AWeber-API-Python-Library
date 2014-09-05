@@ -32,7 +32,7 @@ setup(
         'oauth2>=1.2',
     ],
     tests_require=[
-        'dingus',
+        'mock',
         'coverage',
     ],
     setup_requires=[
