@@ -121,6 +121,22 @@ class AWeberEntry(AWeberResponse):
         collection._data['total_size'] = self._get_total_size(url)
         return collection
 
+    def schedule_broadcast(self, bc_id, scheduled_for):
+        """Invoke the API method to schedule the given broadcast.
+
+        * Note:
+            This method only works on List Entry resources and
+            requires access to subscriber information. Please
+            refer to the AWeber API Reference Documentation at
+            https://labs.aweber.com/docs/reference/1.0#account
+            for more details on how to call this method.
+
+        """
+        self._method_for('list')
+        body = {'scheduled_for': scheduled_for}
+        url = '{0}/broadcasts/{1}/schedule'.format(self.url, bc_id)
+        return self.adapter.request('POST', url, body, response='status')
+
     def _get_total_size(self, uri, **kwargs):
         """Get actual total size number from total_size_link."""
         total_size_uri = '{0}&ws.show=total_size'.format(uri)

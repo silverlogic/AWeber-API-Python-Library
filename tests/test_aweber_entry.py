@@ -41,6 +41,14 @@ class AccountTestCase(TestCase):
         self.account = self.aweber.load_from_url('/accounts/1')
 
 
+class ListTestCase(TestCase):
+
+    def setUp(self):
+        self.aweber = AWeberAPI('1', '2')
+        self.aweber.adapter = MockAdapter()
+        self.list_ = self.aweber.load_from_url('/accounts/1/lists/303449')
+
+
 class TestAWeberAccountEntry(AccountTestCase):
 
     def test_should_be_an_entry(self):
@@ -108,6 +116,48 @@ class TestAccountFindSubscribers(AccountTestCase):
         assert len(subscribers) == 1
         assert subscribers[0].self_link == \
                 'https://api.aweber.com/1.0/accounts/1/lists/303449/subscribers/1'
+
+
+class TestListScheduleBroadcast(ListTestCase):
+
+    def setUp(self):
+        super(TestListScheduleBroadcast, self).setUp()
+        self.aweber.adapter.requests = []
+        self.status = self.list_.schedule_broadcast(
+            bc_id=2, scheduled_for='2014-09-06 18:55:00')
+        self.request = self.aweber.adapter.requests[0]
+
+    def test_should_return_status(self):
+        self.assertEqual(int(self.status), 201)
+
+    def test_should_make_post_request(self):
+        self.assertEqual(self.request['method'], 'POST')
+
+    def test_should_build_correct_url(self):
+            self.assertEqual(self.request['url'],
+            '/accounts/1/lists/303449/broadcasts/2/schedule'
+        )
+
+    def test_should_pass_scheduled_for_date(self):
+            self.assertEqual(self.request['data'],
+            {'scheduled_for': '2014-09-06 18:55:00'}
+        )
+
+
+class TestListScheduleBroadcastError(ListTestCase):
+
+    def setUp(self):
+        super(TestListScheduleBroadcastError, self).setUp()
+        self.list_ = self.aweber.load_from_url('/accounts/1/lists/303449')
+        self.aweber.adapter.requests = []
+
+    def test_should_raise_exception_when_failing(self):
+        self.assertRaises(
+            APIException,
+            self.list_.schedule_broadcast,
+            bc_id=3,
+            scheduled_for='2014-09-06 18:55:00',
+        )
 
 
 class SubscriberTestCase(TestCase):

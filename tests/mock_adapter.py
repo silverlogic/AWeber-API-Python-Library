@@ -61,6 +61,17 @@ responses = {
         '/accounts/1/lists/303449/subscribers/1': ({
             'status': '201',
             'location': '/accounts/1/lists/505454/subscribers/3'}, None),
+        '/accounts/1/lists/303449/broadcasts/2/schedule': ({
+            'status': '201',
+            'location': '/accounts/1/lists/303449/broadcasts/2/schedule'},
+            None
+        ),
+        '/accounts/1/lists/303449/broadcasts/3/schedule': ({
+            'status': '400',
+            'location': '/accounts/1/lists/303449/broadcasts/3/schedule'},
+            'error'
+        ),
+
     },
     'PATCH' : {
         '/accounts/1/lists/303449/subscribers/1': ({'status': '209'}, None),
