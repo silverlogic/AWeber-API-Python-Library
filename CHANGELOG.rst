@@ -1,5 +1,8 @@
 Changelog
 ---------
+2014-11-13: v1.2.0
+   * Add a new endpoint to schedule broadcast
+
 2013-01-03: v1.1.4
   * Support version 1.0.17 of the API. (Broadcast Stats)
   * See https://labs.aweber.com/docs/changelog for details
