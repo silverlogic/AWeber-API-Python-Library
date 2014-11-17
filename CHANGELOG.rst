@@ -1,5 +1,6 @@
-Changelog
----------
+2014-11-17: v1.3.0
+   * Add a new endpoint to cancel scheduled broadcast
+
 2014-11-20 v1.2.1
   * Removed SSL Certificate workaround
   * Upgraded httplib2 >= 0.9.0
