@@ -8,7 +8,7 @@ if version < '2.2.3':
 
 setup(
     name='aweber_api',
-    version='1.2.0',
+    version='1.3.0',
     author='AWeber Dev Team',
     author_email='api@aweber.com',
     maintainer='AWeber API Team',

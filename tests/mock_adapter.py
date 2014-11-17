@@ -71,6 +71,16 @@ responses = {
             'location': '/accounts/1/lists/303449/broadcasts/3/schedule'},
             'error'
         ),
+        '/accounts/1/lists/303449/broadcasts/2/cancel': ({
+            'status': '204',
+            'location': '/accounts/1/lists/303449/broadcasts/2/cancel'},
+            None
+        ),
+        '/accounts/1/lists/303449/broadcasts/3/cancel': ({
+            'status': '400',
+            'location': '/accounts/1/lists/303449/broadcasts/3/cancel'},
+            'error'
+        ),
 
     },
     'PATCH' : {

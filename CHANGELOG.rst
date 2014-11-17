@@ -1,5 +1,8 @@
 Changelog
 ---------
+2014-11-17: v1.3.0
+   * Add a new endpoint to cancel scheduled broadcast
+
 2014-11-13: v1.2.0
    * Add a new endpoint to schedule broadcast
 
