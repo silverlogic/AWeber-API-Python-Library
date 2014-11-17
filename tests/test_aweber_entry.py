@@ -160,6 +160,44 @@ class TestListScheduleBroadcastError(ListTestCase):
         )
 
 
+class TestListCancelBroadcast(ListTestCase):
+
+    def setUp(self):
+        super(TestListCancelBroadcast, self).setUp()
+        self.aweber.adapter.requests = []
+        self.status = self.list_.cancel_broadcast(bc_id=2)
+        self.request = self.aweber.adapter.requests[0]
+
+    def test_should_return_status(self):
+        self.assertEqual(int(self.status), 204)
+
+    def test_should_make_post_request(self):
+        self.assertEqual(self.request['method'], 'POST')
+
+    def test_should_build_correct_url(self):
+            self.assertEqual(self.request['url'],
+            '/accounts/1/lists/303449/broadcasts/2/cancel'
+        )
+
+    def test_should_pass_empty_date(self):
+            self.assertEqual(self.request['data'], {})
+
+
+class TestListCancelBroadcastError(ListTestCase):
+
+    def setUp(self):
+        super(TestListCancelBroadcastError, self).setUp()
+        self.list_ = self.aweber.load_from_url('/accounts/1/lists/303449')
+        self.aweber.adapter.requests = []
+
+    def test_should_raise_exception_when_failing(self):
+        self.assertRaises(
+            APIException,
+            self.list_.cancel_broadcast,
+            bc_id=3,
+        )
+
+
 class SubscriberTestCase(TestCase):
 
     def setUp(self):
