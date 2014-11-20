@@ -8,7 +8,7 @@ if version < '2.2.3':
 
 setup(
     name='aweber_api',
-    version='1.2.0',
+    version='1.2.1',
     author='AWeber Dev Team',
     author_email='api@aweber.com',
     maintainer='AWeber API Team',
@@ -28,7 +28,7 @@ setup(
     ],
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'httplib2>=0.7.0,<=0.8.0',
+        'httplib2>=0.9.0,<=0.10.0',
         'oauth2>=1.2',
     ],
     tests_require=[
