@@ -82,7 +82,6 @@ class OAuthAdapter(object):
         else:
             client = oauth.Client(self.consumer)
 
-        client.ca_certs = os.path.join(os.path.dirname(__file__), 'cacert.crt')
         return client
 
     def _prepare_request_body(self, method, url, data):
