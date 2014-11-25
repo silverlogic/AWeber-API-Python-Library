@@ -128,7 +128,7 @@ class AWeberEntry(AWeberResponse):
             This method only works on List Entry resources and
             requires access to subscriber information. Please
             refer to the AWeber API Reference Documentation at
-            https://labs.aweber.com/docs/reference/1.0#account
+            https://labs.aweber.com/docs/reference/1.0#Broadcast Scheduler
             for more details on how to call this method.
 
         """
@@ -136,6 +136,22 @@ class AWeberEntry(AWeberResponse):
         body = {'scheduled_for': scheduled_for}
         url = '{0}/broadcasts/{1}/schedule'.format(self.url, bc_id)
         return self.adapter.request('POST', url, body, response='status')
+
+    def cancel_broadcast(self, bc_id):
+        """Invoke the API method to cancel the given scheduled broadcast.
+
+        * Note:
+            This method only works on List Entry resources and
+            requires access to subscriber and send broadcast
+            information. Please refer to the AWeber API Reference
+            Documentation at
+            https://labs.aweber.com/docs/reference/1.0#Cancel Broadcast
+            more details on how to call this method.
+
+        """
+        self._method_for('list')
+        url = '{0}/broadcasts/{1}/cancel'.format(self.url, bc_id)
+        return self.adapter.request('POST', url, data={}, response='status')
 
     def _get_total_size(self, uri, **kwargs):
         """Get actual total size number from total_size_link."""
