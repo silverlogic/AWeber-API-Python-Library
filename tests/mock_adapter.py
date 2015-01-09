@@ -48,6 +48,10 @@ responses = {
                          'email=joe%40example.com': ({}, 'subscribers/find'),
         '/accounts/1/lists/303449/subscribers?ws.show=total_size&ws.op=find&' \
                          'email=joe%40example.com': ({}, 'subscribers/find_ts'),
+         '/accounts/1/lists/303449/broadcasts/total?status=sent': (
+             {'total_size': 10}, 'campaigns/303449'),
+         '/accounts/1/lists/303449/broadcasts?status=sent': (
+             {'total_size': 10}, 'campaigns/303449'),
     },
     'POST' : {
         '/accounts/1/lists/303449/any_collection':  ({
