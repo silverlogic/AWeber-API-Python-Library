@@ -198,6 +198,27 @@ class TestListCancelBroadcastError(ListTestCase):
         )
 
 
+class TestListGetBroadcasts(ListTestCase):
+
+    def setUp(self):
+        super(TestListGetBroadcasts, self).setUp()
+        self.aweber.adapter.requests = []
+        self.broadcasts = self.list_.get_broadcasts(status='sent')
+        self.request = self.aweber.adapter.requests[0]
+
+    def test_should_return_collection(self):
+        self.assertEqual(type(self.broadcasts), AWeberCollection)
+
+    def test_should_make_get_request(self):
+        self.assertEqual(self.request['method'], 'GET')
+
+    def test_should_build_correct_url(self):
+        self.assertEqual(
+            self.request['url'],
+            '/accounts/1/lists/303449/broadcasts?status=sent'
+        )
+
+
 class SubscriberTestCase(TestCase):
 
     def setUp(self):
