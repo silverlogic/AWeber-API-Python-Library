@@ -1,3 +1,8 @@
+Changelog
+---------
+2014-12-29: v1.4.0
+    Add a new endpoint to get broadcasts by list_id and status
+
 2014-11-17: v1.3.0
    * Add a new endpoint to cancel scheduled broadcast
 

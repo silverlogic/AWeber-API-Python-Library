@@ -126,7 +126,7 @@ class AWeberEntry(AWeberResponse):
 
         * Note:
             This method only works on List Entry resources and
-            requires access to subscriber information. Please
+            requires send broadcast email permissions. Please
             refer to the AWeber API Reference Documentation at
             https://labs.aweber.com/docs/reference/1.0#broadcast_scheduler
             for more details on how to call this method.
@@ -137,16 +137,37 @@ class AWeberEntry(AWeberResponse):
         url = '{0}/broadcasts/{1}/schedule'.format(self.url, bc_id)
         return self.adapter.request('POST', url, body, response='status')
 
+    def get_broadcasts(self, status, **kwargs):
+        """Invoke the API method to retrieve broadcasts by status.
+
+        * Note:
+            This method only works on List Entry resources. Please
+            refer to the AWeber API Reference Documentation at
+            https://labs.aweber.com/docs/reference/1.0#get_broadcasts
+            for more details on how to call this method.
+
+        """
+        self._method_for('list')
+        params = {'status': status}
+        params.update(kwargs)
+        query_string = urlencode(params)
+        url = '{0.url}/broadcasts?{1}'.format(self, query_string)
+
+        data = self.adapter.request('GET', url)
+        collection = aweber_api.AWeberCollection(url, data, self.adapter)
+        collection._data['total_size'] = self._get_broadcast_count(
+            query_string)
+        return collection
+
     def cancel_broadcast(self, bc_id):
         """Invoke the API method to cancel the given scheduled broadcast.
 
         * Note:
             This method only works on List Entry resources and
-            requires access to subscriber and send broadcast
-            information. Please refer to the AWeber API Reference
-            Documentation at
+            requires send broadcast email permissions. Please refer
+            to the AWeber API Reference Documentation at
             https://labs.aweber.com/docs/reference/1.0#cancel_broadcast
-            more details on how to call this method.
+            for more details on how to call this method.
 
         """
         self._method_for('list')
@@ -157,6 +178,12 @@ class AWeberEntry(AWeberResponse):
         """Get actual total size number from total_size_link."""
         total_size_uri = '{0}&ws.show=total_size'.format(uri)
         return int(self.adapter.request('GET', total_size_uri))
+
+    def _get_broadcast_count(self, query_string):
+        """Get actual total size number from total_size_link."""
+        total_size_uri = '{0.url}/broadcasts/total?{1}'.format(
+            self, query_string)
+        return int(self.adapter.request('GET', total_size_uri)['total_size'])
 
     def get_parent_entry(self):
         """Return the parent entry of this entry
