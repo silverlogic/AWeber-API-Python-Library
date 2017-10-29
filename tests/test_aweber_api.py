@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock_adapter import MockAdapter
+from tests.mock_adapter import MockAdapter
 from mock import Mock
 from aweber_api import (AWeberAPI, AWeberUser, ACCESS_TOKEN_URL, AUTHORIZE_URL,
                         REQUEST_TOKEN_URL, AWeberEntry)

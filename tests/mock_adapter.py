@@ -1,12 +1,15 @@
 import json
 import os
-from urlparse import urlparse, parse_qs
-from urllib import quote
 
 import mock
 
-from aweber_api import AWeberUser
-from aweber_api import OAuthAdapter
+from aweber_api import AWeberUser, OAuthAdapter
+
+try:
+    from urllib import quote
+    from urlparse import urlparse, parse_qs
+except ImportError:
+    from urllib.parse import urlparse, parse_qs, quote
 
 __all__ = ['MockAdapter']
 

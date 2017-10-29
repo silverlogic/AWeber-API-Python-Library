@@ -1,10 +1,15 @@
-from urllib import urlencode
 import json
 import os
 
 import oauth2 as oauth
+import six
 
 from aweber_api.base import APIException
+
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
 
 
 class OAuthAdapter(object):
@@ -61,7 +66,9 @@ class OAuthAdapter(object):
             raise APIException(
                 '{0}: {1}'.format(error_type, error_msg))
 
-        if response == 'body' and isinstance(content, str):
+        if isinstance(content, six.binary_type):
+            content = content.decode('utf-8')
+        if response == 'body' and isinstance(content, six.string_types):
             return self._parse(content)
         if response == 'status':
             return resp['status']

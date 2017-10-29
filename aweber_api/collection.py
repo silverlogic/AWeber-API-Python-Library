@@ -1,10 +1,14 @@
 from math import floor
-from urlparse import parse_qs
-from urllib import urlencode
 
 from aweber_api.base import API_BASE
 from aweber_api.entry import AWeberEntry
 from aweber_api.response import AWeberResponse
+
+try:
+    from urlparse import parse_qs
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import parse_qs, urlencode
 
 
 class AWeberCollection(AWeberResponse):
@@ -122,13 +126,17 @@ class AWeberCollection(AWeberResponse):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         """Get the next entry in the collection."""
         if self._current < self.total_size:
             self._current += 1
             return self[self._current - 1]
         self._current = 0
         raise StopIteration
+
+    def next(self):
+        """Added for python2 compatibility"""
+        return self.__next__()
 
     def __getitem__(self, offset):
         if offset < 0 or offset >= self._data['total_size']:

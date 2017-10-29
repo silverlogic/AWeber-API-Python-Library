@@ -1,10 +1,14 @@
 import re
 from unittest import TestCase
-from urllib import urlencode
 
 from aweber_api import AWeberAPI, AWeberCollection, AWeberEntry
 from aweber_api.base import APIException
-from mock_adapter import MockAdapter
+from tests.mock_adapter import MockAdapter
+
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
 
 
 class TestAWeberEntry(TestCase):

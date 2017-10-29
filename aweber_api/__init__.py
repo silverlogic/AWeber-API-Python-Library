@@ -1,5 +1,3 @@
-from urlparse import parse_qs
-
 from aweber_api.base import (
     ACCESS_TOKEN_URL,
     APIException,
@@ -12,6 +10,11 @@ from aweber_api.collection import AWeberCollection
 from aweber_api.entry import AWeberEntry
 from aweber_api.oauth import OAuthAdapter
 from aweber_api.response import AWeberResponse
+
+try:
+    from urlparse import parse_qs
+except ImportError:
+    from urllib.parse import parse_qs
 
 
 class AWeberAPI(AWeberBase):

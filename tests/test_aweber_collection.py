@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from aweber_api import AWeberAPI, AWeberCollection, AWeberEntry
 from aweber_api.base import API_BASE, APIException
-from mock_adapter import MockAdapter
+from tests.mock_adapter import MockAdapter
 
 
 class TestAWeberCollection(TestCase):
