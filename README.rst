@@ -1,9 +1,9 @@
 This client library has been deprecated.
-----------------------------------------
-This library will no longer be supported and does not support OAuth2. 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Please visit our `Python Examples<https://github.com/aweber/public-api-examples/tree/master/python>` as a reference.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-------------------------
+
+**This library will no longer be supported and does not support OAuth2.**
+
+**Please visit our Python Public API Examples (https://github.com/aweber/public-api-examples/tree/master/python) as a reference.**
 
 AWeber API Python Library
 ------------------------- 
